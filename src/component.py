@@ -71,7 +71,7 @@ class Component(KBCEnvHandler):
                                                                   datetime.utcnow().strftime('%Y-%m-%d'))
             recent = True
         else:
-            start_date, end_date = None, None
+            start_date = None
             recent = False
 
         logging.info('Extracting Companies')
