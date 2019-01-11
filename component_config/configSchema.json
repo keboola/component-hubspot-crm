@@ -1,0 +1,23 @@
+{
+	"type": "object",
+	"title": "extractor configuration",
+	"required": [
+		"#api_token",
+		"period_from"
+	],
+	"properties": {
+	    "#api_token": {
+			"type": "string",
+			"title": "API token",
+			"format": "password",
+			"propertyOrder": 200
+		},
+		"period_from": {
+			"type": "string",
+			"format": "date",
+			"title": "Period from date [including]",
+			"description": "Date in YYYY-MM-DD format or dateparser string i.e. 5 days ago, 1 month ago, yesterday, etc.",
+			"propertyOrder": 300
+		}
+	}
+}
