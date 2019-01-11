@@ -192,7 +192,7 @@ class HubspotClientService(HttpClientBase):
 
         if start_time:
             pages = self._get_paged_result_pages(ENGAGEMENTS_PAGED_SINCE, {"since": int(start_time.timestamp() * 1000)},
-                                                 'results', 'count', 'offset', 'hasMore', offset, 250)
+                                                 'results', 'count', 'offset', 'offset', 'hasMore', offset, 250)
         else:
             pages = self._get_paged_result_pages(ENGAGEMENTS_PAGED, {}, 'results', 'limit', 'offset', 'offset',
                                                  'hasMore',
