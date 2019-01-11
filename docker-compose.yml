@@ -8,3 +8,12 @@ services:
         - ./data:/data
     environment:
       - KBC_DATADIR=./data
+  test:
+    build: .
+    volumes:
+      - ./:/code
+      - ./data:/data
+    environment:
+      - KBC_DATADIR=./data
+    command:
+      - python -m unittest discover
