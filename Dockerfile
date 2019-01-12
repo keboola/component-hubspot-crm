@@ -4,7 +4,7 @@ ENV PYTHONIOENCODING utf-8
 COPY . /code/
 
 RUN apt-get update && apt-get install -y build-essential
-#RUN pip install flake8
+RUN pip install flake8
 
 RUN pip3 install -r /code/requirements.txt
 
