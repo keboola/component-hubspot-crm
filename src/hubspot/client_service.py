@@ -200,7 +200,10 @@ class HubspotClientService(HttpClientBase):
                                                  'hasMore',
                                                  offset, 250)
         for pg_res in pages:
-            pg_res.drop(['metadata.text', 'metadata.html'], 1)
+            if 'metadata.text' in pg_res.columns:
+                pg_res.drop(['metadata.text'], 1)
+            if 'metadata.html' in pg_res.columns:
+                pg_res.drop(['metadata.html'], 1)
             yield pg_res
 
     def get_lists(self):
