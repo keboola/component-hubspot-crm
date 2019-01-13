@@ -23,8 +23,8 @@ CAMPAIGNS_PK = ['id']
 DEAL_C_LIST_PK = ['Deal_ID', 'Contact_ID']
 DEAL_STAGE_HIST_PK = ['DEAL_ID', 'sourceVid', 'sourceId', 'timestamp']
 DEAL_PK = ['dealId ']
-CONTACT_LIST_PK = ['internal_list_id', 'static_list_id', 'CONTACT_ID']
-C_SUBMISSION_PK = ['form_id', 'CONTACT_ID', 'portal_id', 'conversion_id', 'page_id']
+CONTACT_LIST_PK = ['internal-list-id', 'static-list-id', 'CONTACT_ID']
+C_SUBMISSION_PK = ['form-id', 'CONTACT_ID', 'portal-id', 'conversion-id', 'page-id']
 CONTACT_PK = ['vid', 'portal_id']
 COMPANY_ID_COL = ['companyId']
 
@@ -35,6 +35,12 @@ KEY_PERIOD_TO = 'period_to'
 
 MANDATORY_PARS = [KEY_API_TOKEN]
 MANDATORY_IMAGE_PARS = []
+
+# columns
+CONTACT_FORM_SUBISSION_COLS = ["contact-associated-by", "conversion-id", "form-id", "form-type", "meta-data",
+                               "page-url", "portal-id", "timestamp", "title", 'CONTACT_ID']
+CONTACT_LISTS_COLS = ["internal-list-id", "is-member", "static-list-id", "timestamp", "vid", "CONTACT_ID"]
+DEAL_STAGE_HIST_COLS = ['name', 'source', 'sourceId', 'sourceVid', 'timestamp', 'value', 'DEAL_ID']
 
 APP_VERSION = '0.0.1'
 
@@ -146,12 +152,17 @@ class Component(KBCEnvHandler):
             if len(row['form-submissions']) > 0:
                 temp_contacts_sub_forms = pd.DataFrame(row['form-submissions'])
                 temp_contacts_sub_forms['CONTACT_ID'] = row['canonical-vid']
+
+                res_cols = CONTACT_FORM_SUBISSION_COLS
+
                 # save res
                 self.output_file(temp_contacts_sub_forms, c_subform_path, temp_contacts_sub_forms.columns)
 
             if len(row['list-memberships']) > 0:
                 temp_contacts_lists = pd.DataFrame(row['list-memberships'])
                 temp_contacts_lists['CONTACT_ID'] = row['canonical-vid']
+                res_cols = CONTACT_LISTS_COLS
+                temp_contacts_lists = temp_contacts_lists.loc[:, res_cols].fillna('')
                 # save res
                 self.output_file(temp_contacts_lists, c_lists_path, temp_contacts_lists.columns)
 
@@ -183,6 +194,9 @@ class Component(KBCEnvHandler):
                     row['properties.dealstage.versions']) != 'nan' and len(row['properties.dealstage.versions']) > 0:
                 temp_stage_history = pd.DataFrame(row['properties.dealstage.versions'])
                 temp_stage_history['DEAL_ID'] = row['dealId']
+                # fix columns - sometimes there are some missing in the response
+                temp_stage_history = temp_stage_history.loc[:, DEAL_STAGE_HIST_COLS].fillna('')
+
                 self.output_file(temp_stage_history, stage_hist_path, temp_stage_history.columns)
 
             if row.get('associations.associatedVids') and len(row['associations.associatedVids']) != '[]':
