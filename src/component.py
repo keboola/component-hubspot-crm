@@ -179,12 +179,13 @@ class Component(KBCEnvHandler):
 
         for index, row in deals.iterrows():
 
-            if str(row['properties.dealstage.versions']) != 'nan' and len(row['properties.dealstage.versions']) > 0:
+            if row.get('properties.dealstage.versions') and str(
+                    row['properties.dealstage.versions']) != 'nan' and len(row['properties.dealstage.versions']) > 0:
                 temp_stage_history = pd.DataFrame(row['properties.dealstage.versions'])
                 temp_stage_history['DEAL_ID'] = row['dealId']
                 self.output_file(temp_stage_history, stage_hist_path, temp_stage_history.columns)
 
-            if len(row['associations.associatedVids']) != '[]':
+            if row.get('associations.associatedVids') and len(row['associations.associatedVids']) != '[]':
                 temp_deals_contacts_list = pd.DataFrame(row['associations.associatedVids'],
                                                         columns=['Contact_ID'])
                 temp_deals_contacts_list['Deal_ID'] = row['dealId']
