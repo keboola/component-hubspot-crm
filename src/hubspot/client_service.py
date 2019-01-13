@@ -174,14 +174,16 @@ class HubspotClientService(HttpClientBase):
 
     def get_email_events(self, start_date: datetime) -> Iterable:
         offset = ''
-
-        parameters = {'eventType': 'OPEN', 'startTimestamp': int(start_date.timestamp() * 1000)}
+        timestamp = None
+        if start_date:
+            timestamp = int(start_date.timestamp() * 1000)
+        parameters = {'eventType': 'OPEN', 'startTimestamp': timestamp}
         for open_ev in self._get_paged_result_pages(EMAIL_EVENTS, parameters, 'events', 'limit', 'offset', 'offset',
                                                     'hasMore',
                                                     offset, 1000):
             yield open_ev
 
-        parameters = {'eventType': 'CLICK', 'startTimestamp': int(start_date.timestamp() * 1000)}
+        parameters = {'eventType': 'CLICK', 'startTimestamp': timestamp}
         for click_ev in self._get_paged_result_pages(EMAIL_EVENTS, parameters, 'events', 'limit', 'offset', 'offset',
                                                      'hasMore',
                                                      offset, 1000):
