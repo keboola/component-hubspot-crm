@@ -159,6 +159,7 @@ class Component(KBCEnvHandler):
                 temp_contacts_sub_forms['CONTACT_ID'] = row['canonical-vid']
 
                 res_cols = CONTACT_FORM_SUBISSION_COLS
+                temp_contacts_sub_forms = temp_contacts_sub_forms.loc[:, res_cols].fillna('')
 
                 # save res
                 self.output_file(temp_contacts_sub_forms, c_subform_path, temp_contacts_sub_forms.columns)
