@@ -7,7 +7,6 @@ docker pull quay.io/keboola/developer-portal-cli-v2:latest
 # Update properties in Keboola Developer Portal
 echo "Updating long description"
 value=`cat component_config/component_long_description.md`
-echo "$value"
 docker run --rm \
     -e KBC_DEVELOPERPORTAL_USERNAME \
     -e KBC_DEVELOPERPORTAL_PASSWORD \
