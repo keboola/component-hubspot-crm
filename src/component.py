@@ -23,7 +23,7 @@ CAMPAIGNS_PK = ['id']
 DEAL_C_LIST_PK = ['Deal_ID', 'Contact_ID']
 DEAL_STAGE_HIST_PK = ['DEAL_ID', 'sourceVid', 'sourceId', 'timestamp']
 DEAL_PK = ['dealId ']
-CONTACT_LIST_PK = ['internal-list-id', 'static-list-id', 'CONTACT_ID']
+CONTACT_LIST_PK = ['internalListId', 'listId']
 C_SUBMISSION_PK = ['form-id', 'CONTACT_ID', 'portal-id', 'conversion-id', 'page-id']
 CONTACT_PK = ['vid', 'portal_id']
 COMPANY_ID_COL = ['companyId']
@@ -80,21 +80,21 @@ class Component(KBCEnvHandler):
             start_date = None
             recent = False
 
-        logging.info('Extracting Companies')
-        res_file_path = os.path.join(self.tables_out_path, 'companies.csv')
-        self._get_simple_ds(res_file_path, COMPANY_ID_COL, client_service.get_companies, recent)
-
-        logging.info('Extracting Campaigns from HubSpot CRM')
-        res_file_path = os.path.join(self.tables_out_path, 'campaigns.csv')
-        self._get_simple_ds(res_file_path, CAMPAIGNS_PK, client_service.get_campaigns, recent)
-
-        logging.info('Extracting Email Events from HubSpot CRM')
-        res_file_path = os.path.join(self.tables_out_path, 'email_events.csv')
-        self._get_simple_ds(res_file_path, EMAIL_EVENTS_PK, client_service.get_email_events, start_date)
-
-        logging.info('Extracting Activities from HubSpot CRM')
-        res_file_path = os.path.join(self.tables_out_path, 'activities.csv')
-        self._get_simple_ds(res_file_path, ACTIVITIES_PK, client_service.get_activities, start_date)
+        # logging.info('Extracting Companies')
+        # res_file_path = os.path.join(self.tables_out_path, 'companies.csv')
+        # self._get_simple_ds(res_file_path, COMPANY_ID_COL, client_service.get_companies, recent)
+        #
+        # logging.info('Extracting Campaigns from HubSpot CRM')
+        # res_file_path = os.path.join(self.tables_out_path, 'campaigns.csv')
+        # self._get_simple_ds(res_file_path, CAMPAIGNS_PK, client_service.get_campaigns, recent)
+        #
+        # logging.info('Extracting Email Events from HubSpot CRM')
+        # res_file_path = os.path.join(self.tables_out_path, 'email_events.csv')
+        # self._get_simple_ds(res_file_path, EMAIL_EVENTS_PK, client_service.get_email_events, start_date)
+        #
+        # logging.info('Extracting Activities from HubSpot CRM')
+        # res_file_path = os.path.join(self.tables_out_path, 'activities.csv')
+        # self._get_simple_ds(res_file_path, ACTIVITIES_PK, client_service.get_activities, start_date)
 
         logging.info('Extracting Lists from HubSpot CRM')
         res_file_path = os.path.join(self.tables_out_path, 'lists.csv')
