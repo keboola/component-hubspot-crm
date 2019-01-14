@@ -14,7 +14,7 @@ docker run --rm \
     update-app-property ${KBC_DEVELOPERPORTAL_VENDOR} ${KBC_DEVELOPERPORTAL_APP} longDescription --value=${value}
 
 echo "Updating config schema"
-value=`cat component_config/configurationSchema.json`
+value=`cat component_config/configSchema.json`
 docker run --rm \
     -e KBC_DEVELOPERPORTAL_USERNAME \
     -e KBC_DEVELOPERPORTAL_PASSWORD \
