@@ -139,8 +139,12 @@ class Component(KBCEnvHandler):
         self.configuration.write_table_manifest(file_name=res_file_path, primary_key=CONTACT_PK, incremental=True)
         c_subform_path = os.path.join(self.tables_out_path, 'contacts_form_submissions.csv')
         c_lists_path = os.path.join(self.tables_out_path, 'contacts_lists.csv')
-        self.configuration.write_table_manifest(file_name=c_subform_path, primary_key=C_SUBMISSION_PK, incremental=True)
-        self.configuration.write_table_manifest(file_name=c_lists_path, primary_key=CONTACT_LIST_PK, incremental=True)
+        if os.path.isfile(c_subform_path):
+            self.configuration.write_table_manifest(file_name=c_subform_path, primary_key=C_SUBMISSION_PK,
+                                                    incremental=True)
+        if os.path.isfile(c_lists_path):
+            self.configuration.write_table_manifest(file_name=c_lists_path, primary_key=CONTACT_LIST_PK,
+                                                    incremental=True)
 
     def _store_contact_submission_and_list(self, contacts):
 
@@ -178,9 +182,13 @@ class Component(KBCEnvHandler):
         self.configuration.write_table_manifest(file_name=res_file_path, primary_key=DEAL_PK, incremental=True)
         stage_hist_path = os.path.join(self.tables_out_path, 'deals_stage_history.csv')
         c_lists_path = os.path.join(self.tables_out_path, 'deals_contacts_list.csv')
-        self.configuration.write_table_manifest(file_name=stage_hist_path, primary_key=DEAL_STAGE_HIST_PK,
-                                                incremental=True)
-        self.configuration.write_table_manifest(file_name=c_lists_path, primary_key=DEAL_C_LIST_PK, incremental=True)
+
+        if os.path.isfile(stage_hist_path):
+            self.configuration.write_table_manifest(file_name=stage_hist_path, primary_key=DEAL_STAGE_HIST_PK,
+                                                    incremental=True)
+        if os.path.isfile(c_lists_path):
+            self.configuration.write_table_manifest(file_name=c_lists_path, primary_key=DEAL_C_LIST_PK,
+                                                    incremental=True)
 
     def _store_deals_stage_hist_and_list(self, deals):
 
