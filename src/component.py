@@ -38,7 +38,7 @@ MANDATORY_IMAGE_PARS = []
 
 # columns
 CONTACT_FORM_SUBISSION_COLS = ["contact-associated-by", "conversion-id", "form-id", "form-type", "meta-data",
-                               "page-url", "portal-id", "timestamp", "title", 'CONTACT_ID']
+                               "page-id", "page-url", "portal-id", "timestamp", "title", 'CONTACT_ID']
 CONTACT_LISTS_COLS = ["internal-list-id", "is-member", "static-list-id", "timestamp", "vid", "CONTACT_ID"]
 DEAL_STAGE_HIST_COLS = ['name', 'source', 'sourceId', 'sourceVid', 'timestamp', 'value', 'DEAL_ID']
 
@@ -157,7 +157,7 @@ class Component(KBCEnvHandler):
             if len(row['form-submissions']) > 0:
                 temp_contacts_sub_forms = pd.DataFrame(row['form-submissions'])
                 temp_contacts_sub_forms['CONTACT_ID'] = row['canonical-vid']
-
+                print(temp_contacts_sub_forms.columns.values)
                 res_cols = CONTACT_FORM_SUBISSION_COLS
                 temp_contacts_sub_forms = temp_contacts_sub_forms.loc[:, res_cols].fillna('')
 
