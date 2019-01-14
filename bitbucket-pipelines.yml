@@ -23,7 +23,7 @@ pipelines:
     master:
       - step:
           script:
-            - ./update_dev_portal_properties.sh
+            - ./scripts/update_dev_portal_properties.sh
   tags:
     '*':
       - step:
