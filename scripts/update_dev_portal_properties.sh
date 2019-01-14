@@ -24,8 +24,10 @@ then
         -e KBC_DEVELOPERPORTAL_PASSWORD \
         quay.io/keboola/developer-portal-cli-v2:latest \
         update-app-property ${KBC_DEVELOPERPORTAL_VENDOR} ${KBC_DEVELOPERPORTAL_APP} configurationSchema --value=${value}
+fi
 
 echo "Updating config description"
+
 value=`cat component_config/configuration_description.md`
 echo "$value"
 if [ -z "$value" ]
@@ -35,8 +37,9 @@ then
         -e KBC_DEVELOPERPORTAL_PASSWORD \
         quay.io/keboola/developer-portal-cli-v2:latest \
         update-app-property ${KBC_DEVELOPERPORTAL_VENDOR} ${KBC_DEVELOPERPORTAL_APP} configurationDescription --value=${value}
-
+fi
 echo "Updating short description"
+
 value=`cat component_config/component_short_description.md`
 echo "$value"
 if [ -z "$value" ]
@@ -46,3 +49,4 @@ then
         -e KBC_DEVELOPERPORTAL_PASSWORD \
         quay.io/keboola/developer-portal-cli-v2:latest \
         update-app-property ${KBC_DEVELOPERPORTAL_VENDOR} ${KBC_DEVELOPERPORTAL_APP} shortDescription --value=${value}
+fi
