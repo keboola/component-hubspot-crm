@@ -115,7 +115,7 @@ class Component(KBCEnvHandler):
 
     def _get_simple_ds(self, res_file_path, pkey, ds_getter, *fpars):
         """
-        Generic class to get simple objects
+        Generic method to get simple objects
         :param res_file_path:
         :param pkey:
         :param ds_getter:
@@ -125,7 +125,8 @@ class Component(KBCEnvHandler):
             self.output_file(res, res_file_path, res.columns)
 
         # store manifest
-        self.configuration.write_table_manifest(file_name=res_file_path, primary_key=pkey, incremental=True)
+        if os.path.isfile(res_file_path):
+            self.configuration.write_table_manifest(file_name=res_file_path, primary_key=pkey, incremental=True)
 
     # CONTACTS
     def get_contacts(self, client: HubspotClientService, start_time):
@@ -245,6 +246,10 @@ class Component(KBCEnvHandler):
         Append to the file if file does not exist
         * row by row
         """
+        if data_output.empty:
+            logging.info("No results for %s", file_output)
+            return
+
         if not os.path.isfile(file_output):
             with open(file_output, 'w+', encoding='utf-8') as b:
                 data_output.to_csv(b, index=False, columns=column_headers)
