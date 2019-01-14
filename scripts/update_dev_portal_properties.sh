@@ -9,7 +9,7 @@ docker pull quay.io/keboola/developer-portal-cli-v2:latest
 echo "Updating long description"
 value=`cat component_config/component_long_description.md`
 echo "$value"
-if if [ ! -z "$var" ]
+if [ ! -z "$value" ]
 then
     docker run --rm \
             -e KBC_DEVELOPERPORTAL_USERNAME \
