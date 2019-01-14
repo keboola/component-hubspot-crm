@@ -19,6 +19,7 @@ then
 else
     echo "longDescription is empty!"
     exit 1
+fi
 
 echo "Updating config schema"
 value=`cat component_config/configSchema.json`
