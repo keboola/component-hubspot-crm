@@ -84,6 +84,18 @@ EMAIL_EVENTS_COLS = ['appId', 'appName', 'browser', 'browser.family', 'browser.n
                      'ipAddress', 'location', 'location.city', 'location.country', 'location.state', 'portalId',
                      'recipient', 'sentBy.created', 'sentBy.id', 'smtpId', 'type', 'userAgent']
 
+ENGAGEMENTS_COLS = [
+    "engagement.id", "engagement.portalId", "engagement.active",
+    "engagement.createdAt", "engagement.lastUpdated", "engagement.ownerId", "engagement.type", "engagement.timestamp",
+    "associations.contactIds", "associations.companyIds", "associations.dealIds", "associations.ownerIds",
+    "associations.workflowIds", "associations.ticketIds", "attachments", "metadata.body", "metadata.fromemail",
+    "metadata.fromfirstName", "metadata.fromlastName", "metadata.to.email", "metadata.cc", "metadata.bcc",
+    "metadata.subject", "metadata.html", "metadata.text", "metadata.body", "metadata.subject", "metadata.status",
+    "metadata.forObjectType", "metadata.startTime", "metadata.endTime", "metadata.title", "metadata.toNumber",
+    "metadata.fromNumber", "metadata.status", "metadata.externalId", "metadata.durationMilliseconds",
+    "metadata.externalAccountId", "metadata.recordingUrl", "metadata.body", "metadata.disposition"
+]
+
 CAMPAIGNS = 'email/public/v1/campaigns/'
 
 LISTS = 'contacts/v1/lists'
@@ -313,11 +325,12 @@ class HubspotClientService(HttpClientBase):
 
         if start_time:
             pages = self._get_paged_result_pages(ENGAGEMENTS_PAGED_SINCE, {"since": int(start_time.timestamp() * 1000)},
-                                                 'results', 'count', 'offset', 'offset', 'hasMore', offset, 250)
+                                                 'results', 'count', 'offset', 'offset', 'hasMore', offset, 250,
+                                                 default_cols=ENGAGEMENTS_COLS)
         else:
             pages = self._get_paged_result_pages(ENGAGEMENTS_PAGED, {}, 'results', 'limit', 'offset', 'offset',
                                                  'hasMore',
-                                                 offset, 250)
+                                                 offset, 250, default_cols=ENGAGEMENTS_COLS)
         for pg_res in pages:
             if 'metadata.text' in pg_res.columns:
                 pg_res.drop(['metadata.text'], 1)
