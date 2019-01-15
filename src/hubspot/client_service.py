@@ -316,7 +316,7 @@ class HubspotClientService(HttpClientBase):
 
         return [final_df]
 
-    def get_owners(self, include_inactive=None):
+    def get_owners(self, include_inactive=True):
         final_df = pd.DataFrame()
 
         req = self.get_raw('https://api.hubapi.com/owners/v2/owners/', params={'include_inactive': include_inactive})

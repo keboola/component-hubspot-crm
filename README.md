@@ -8,8 +8,17 @@ Supports retrieval from several endpoints. Some endpoints allow retrieval of rec
 this is set by `Date From` parameter. In most of the cases maximum of last 30 days can be retrieved.
 
 ### Supported Endpoints
-#### Companies
-    
+- [Companies](#Companies)
+- [Contacts](#Contacts)
+- [Deals](#Deals)
+- [Pipelines](#Pipelines)
+- [Campaigns](#Campaigns)
+- [Email Events](#Email Events)
+- [Engagements](#Engagements)
+- [Contact Lists](#Contact Lists)
+- [Owners](#Owners)
+
+#### Companies    
  [All companies](https://developers.hubspot.com/docs/methods/companies/get-all-companies) or 
  [recently modified (last 30 days) ](https://developers.hubspot.com/docs/methods/companies/get_companies_modified) can be retrieved. 
  NOTE: Fetches always 30 day period
@@ -25,8 +34,7 @@ this is set by `Date From` parameter. In most of the cases maximum of last 30 da
 Custom properties may be specified in configuration, names must match with api names as specified by [Company Properties](https://developers.hubspot.com/docs/methods/companies/company-properties-overview)
  
 
-#### Contacts
-    
+#### Contacts    
  [All contacts](https://developers.hubspot.com/docs/methods/contacts/get_contacts) or 
  [recently modified (max last 30 days) ](https://developers.hubspot.com/docs/methods/contacts/get_recently_updated_contacts) can be retrieved. 
  Recently modified period can be limited by `Date From` parameter 
@@ -40,6 +48,7 @@ Custom properties may be specified in configuration, names must match with api n
  'lastmodifieddate', 'source', 'hs_email_optout', 'twitterhandle', 'lead_type', 'hubspot_owner_id', 
  'notes_last_updated', 'hs_analytics_source', 'opt_in', 'createdate', 'hs_twitterid', 'lifecyclestage']
 ```
+
  **Note:** Following properties will be fetched each time, regardless configuration and with option `propertyMode=value_and_history`. This is currently hardcoded and 
  all other properties are fetched with value only:
  
@@ -52,8 +61,9 @@ Custom properties may be specified in configuration, names must match with api n
  
 Custom properties may be specified in configuration, names must match with api names as specified by [Contact Properties](https://developers.hubspot.com/docs/methods/contacts/contact-properties-overview)
  
-#### Deals
-    
+**Result tables** : `contacts.csv`, `contacts_form_submissions.csv`, `contacts_lists.csv`
+ 
+#### Deals    
  [All deals](https://developers.hubspot.com/docs/methods/deals/get-all-deals) or 
  [recently modified (last 30 days) ](https://developers.hubspot.com/docs/methods/deals/get_deals_modified) can be retrieved. 
  NOTE: Fetches max 30 day period, larger periods are cut to match the limit.
@@ -70,31 +80,39 @@ Custom properties may be specified in configuration, names must match with api n
  
 Custom properties may be specified in configuration, names must match with api names as specified by [Deal Properties](https://developers.hubspot.com/docs/methods/deals/deal_properties_overview)
  
+**Result tables** : `deals.csv`, `deals_stage_history.csv`, `deals_contacts_list.csv`
 
+#### Pipelines
+[All pipelines](https://developers.hubspot.com/docs/methods/pipelines/get_pipelines_for_object_type) - gets all pipelines and its stages.
 
+**Result tables** : `pipelines.csv`, `pipeline_stages.csv`
 
-##Creating a new component
-Clone this repository into new folder and remove git history
-```bash
-git clone https://bitbucket.org:kds_consulting_team/kbc-python-template.git my-new-component
-cd my-new-component
-rm -rf .git
-git init
-git remote add origin PATH_TO_YOUR_BB_REPO
-git update-index --chmod=+x deploy.sh
-git update-index --chmod=+x scripts/update_dev_portal_properties.sh
-git add .
-git commit -m 'initial'
-git push -u origin master
-```
+#### Campaigns
+[All Campaigns](https://developers.hubspot.com/docs/methods/email/get_campaigns_by_id) 
 
+NOTE: Fetches max 30 day period
 
-##Setting up CI
- - Enable [pipelines](https://confluence.atlassian.com/bitbucket/get-started-with-bitbucket-pipelines-792298921.html) in the repository.
- - Set `KBC_DEVELOPERPORTAL_APP` env variable in Bitbucket (dev portal app id)
+#### Email Events
+[All Email Events](https://developers.hubspot.com/docs/methods/email/get_events)  - possible to limit by `Date From` parameter.
+
+NOTE: Fetches max 30 day period, larger periods are cut to match the limit.
  
- ![picture](docs/imgs/ci_variable.png)
+#### Engagements 
+[All Activities](https://developers.hubspot.com/docs/methods/engagements/get-all-engagements) or 
+ [recently modified (max last 30 days) ](https://developers.hubspot.com/docs/methods/engagements/get-recent-engagements) - 
+ possible to limit by `Date From` parameter.
+
+NOTE: Fetches max 30 day period, larger periods are cut to match the limit.
+
+#### Contact Lists
+[All Lists](https://developers.hubspot.com/docs/methods/lists/get_lists) 
+
+NOTE: Always fetches all available lists
  
+ #### Owners
+[All owners](https://developers.hubspot.com/docs/methods/owners/get_owners) 
+
+NOTE: Always sets `include_inactive` to `True`
  
 ## Development
  
@@ -102,6 +120,7 @@ This example contains runnable container with simple unittest. For local testing
 and use docker-compose commands to run the container or execute tests. 
 
 If required, change local data folder path to your custom:
+
 ```yaml
     volumes:
       - ./:/code
@@ -111,8 +130,8 @@ If required, change local data folder path to your custom:
 Clone this repository and init the workspace with following command:
 
 ```
-git clone https://bitbucket.org:kds_consulting_team/kbc-python-template.git my-new-component
-cd my-new-component
+git clone https://bitbucket.org:kds_consulting_team/kds-team.ex-hubspot.git
+cd kds-team.ex-hubspot
 docker-compose build
 docker-compose run --rm dev
 ```
