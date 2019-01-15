@@ -24,7 +24,7 @@ DEAL_C_LIST_PK = ['Deal_ID', 'Contact_ID']
 DEAL_STAGE_HIST_PK = ['DEAL_ID', 'sourceVid', 'sourceId', 'timestamp']
 DEAL_PK = ['dealId ']
 CONTACT_LIST_PK = ['internal_list_id', 'static_list_id', 'CONTACT_ID']
-C_SUBMISSION_PK = ['form_id', 'CONTACT_ID', 'portal_id', 'conversion_id', 'page_id']
+C_SUBMISSION_PK = ['form_id', 'CONTACT_ID', 'portal_id', 'conversion_id', 'page_id', 'page_url']
 CONTACT_PK = ['vid', 'portal_id']
 COMPANY_ID_COL = ['companyId']
 

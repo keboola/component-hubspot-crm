@@ -71,13 +71,6 @@ CONTACT_DEFAULT_PROPERTIES = ['hs_facebookid', 'hs_linkedinid', 'ip_city', 'ip_c
                               'hubspot_owner_id', 'notes_last_updated', 'hs_analytics_source', 'opt_in',
                               'createdate', 'hs_twitterid', 'lifecyclestage']
 
-DEAL_DEFAULT_PROPERTIES = ['authority', 'budget', 'campaign_source', 'hs_analytics_source', 'hs_campaign',
-                           'hs_lastmodifieddate', 'need', 'partner_name', 'timeframe', 'dealname', 'amount',
-                           'closedate', 'pipeline',
-                           'createdate', 'engagements_last_meeting_booked', 'dealtype', 'hs_createdate', 'description',
-                           'start_date', 'closed_lost_reason', 'closed_won_reason', 'end_date', 'lead_owner',
-                           'tech_owner', 'service_amount', 'contract_type', 'hubspot_owner_id',
-                           'partner_name', 'notes_last_updated']
 
 CAMPAIGNS = 'email/public/v1/campaigns/'
 
