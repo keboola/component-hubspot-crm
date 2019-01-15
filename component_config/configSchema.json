@@ -5,7 +5,9 @@
     "#api_token",
     "period_from",
     "endpoints",
-    "company_properties"
+    "company_properties",
+    "contact_properties",
+    "deal_properties"
   ],
   "properties": {
     "#api_token": {

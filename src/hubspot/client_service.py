@@ -63,9 +63,9 @@ CONTACTS_DEFAULT_COLS = ["addedAt",
                          "vid"]
 
 CONTACT_DEFAULT_PROPERTIES = ['hs_facebookid', 'hs_linkedinid', 'ip_city', 'ip_country',
-                              'ip_country_code', 'newsletter_opt_in', 'firstname', 'linkedin_profile',
-                              'lastname', 'email', 'mobilephone', 'phone', 'city',
-                              'country', 'region', 'jobtitle', 'company', 'website', 'numemployees',
+                              'ip_country_code', 'newsletter_opt_in', 'linkedin_profile',
+                              'email', 'mobilephone', 'phone', 'city',
+                              'country', 'region', 'jobtitle', 'website', 'numemployees',
                               'industry', 'associatedcompanyid', 'hs_lead_status', 'lastmodifieddate',
                               'source', 'hs_email_optout', 'twitterhandle', 'lead_type',
                               'hubspot_owner_id', 'notes_last_updated', 'hs_analytics_source', 'opt_in',
@@ -138,6 +138,8 @@ class HubspotClientService(HttpClientBase):
             offset = req_response[offset_resp_attr]
             final_df = final_df.append(json_normalize(req_response[res_obj_name]))
             if default_cols:
+                # dedupe
+                default_cols = list(set(default_cols))
                 final_df = final_df.loc[:, default_cols].fillna('')
             # sort cols
             final_df = final_df.reindex(sorted(final_df.columns), axis=1)
