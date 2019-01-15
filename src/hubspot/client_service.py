@@ -78,6 +78,12 @@ LISTS_COLS = ['archived', 'authorId', 'createdAt', 'deleteable', 'dynamic', 'fil
               'metaData.processing', 'metaData.size', 'name', 'portalId', 'readOnly',
               'updatedAt']
 
+EMAIL_EVENTS_COLS = ['appId', 'appName', 'browser', 'browser.family', 'browser.name', 'browser.producer',
+                     'browser.producerUrl', 'browser.type', 'browser.url', 'browser.version', 'causedBy.created',
+                     'causedBy.id', 'created', 'deviceType', 'duration', 'emailCampaignId', 'filteredEvent', 'id',
+                     'ipAddress', 'location', 'location.city', 'location.country', 'location.state', 'portalId',
+                     'recipient', 'sentBy.created', 'sentBy.id', 'smtpId', 'type', 'userAgent']
+
 CAMPAIGNS = 'email/public/v1/campaigns/'
 
 LISTS = 'contacts/v1/lists'
@@ -133,6 +139,8 @@ class HubspotClientService(HttpClientBase):
             final_df = final_df.append(json_normalize(req_response[res_obj_name]))
             if default_cols:
                 final_df = final_df.loc[:, default_cols].fillna('')
+            # sort cols
+            final_df = final_df.reindex(sorted(final_df.columns), axis=1)
             yield final_df
 
     def _get_all_pages_result(self, endpoint, parameters, res_obj_name, limit_attr, offset_attr, has_more_attr, offset,
@@ -280,13 +288,13 @@ class HubspotClientService(HttpClientBase):
         parameters = {'eventType': 'OPEN', 'startTimestamp': timestamp}
         for open_ev in self._get_paged_result_pages(EMAIL_EVENTS, parameters, 'events', 'limit', 'offset', 'offset',
                                                     'hasMore',
-                                                    offset, 1000):
+                                                    offset, 1000, default_cols=EMAIL_EVENTS_COLS):
             yield open_ev
 
         parameters = {'eventType': 'CLICK', 'startTimestamp': timestamp}
         for click_ev in self._get_paged_result_pages(EMAIL_EVENTS, parameters, 'events', 'limit', 'offset', 'offset',
                                                      'hasMore',
-                                                     offset, 1000):
+                                                     offset, 1000, default_cols=EMAIL_EVENTS_COLS):
             yield click_ev
 
     def get_activities(self, start_time: datetime) -> Iterable:

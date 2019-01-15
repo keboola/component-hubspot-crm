@@ -31,7 +31,7 @@ COMPANY_ID_COL = ['companyId']
 # config keys
 KEY_API_TOKEN = '#api_token'
 KEY_PERIOD_FROM = 'period_from'
-KEY_PERIOD_TO = 'period_to'
+KEY_ENDPOINTS = 'endpoints'
 
 MANDATORY_PARS = [KEY_API_TOKEN]
 MANDATORY_IMAGE_PARS = []
