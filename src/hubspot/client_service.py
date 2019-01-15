@@ -71,6 +71,12 @@ CONTACT_DEFAULT_PROPERTIES = ['hs_facebookid', 'hs_linkedinid', 'ip_city', 'ip_c
                               'hubspot_owner_id', 'notes_last_updated', 'hs_analytics_source', 'opt_in',
                               'createdate', 'hs_twitterid', 'lifecyclestage']
 
+LISTS_COLS = ['archived', 'authorId', 'createdAt', 'deleteable', 'dynamic', 'filters',
+              'internalListId', 'listId', 'listType', 'metaData.error',
+              'metaData.lastProcessingStateChangeAt', 'metaData.lastSizeChangeAt',
+              'metaData.listReferencesCount', 'metaData.parentFolderId',
+              'metaData.processing', 'metaData.size', 'name', 'portalId', 'readOnly',
+              'updatedAt']
 
 CAMPAIGNS = 'email/public/v1/campaigns/'
 
@@ -304,7 +310,7 @@ class HubspotClientService(HttpClientBase):
         offset = 0
 
         return self._get_paged_result_pages(LISTS, {}, 'lists', 'limit', 'offset', 'offset', 'has-more',
-                                            offset, 250)
+                                            offset, 250, default_cols=LISTS_COLS)
 
     def get_pipelines(self, include_inactive=None):
         final_df = pd.DataFrame()

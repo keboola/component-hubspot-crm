@@ -19,16 +19,17 @@ this is set by `Date From` parameter. In most of the cases maximum of last 30 da
 - [Owners](#Owners)
 
 #### Companies    
+
  [All companies](https://developers.hubspot.com/docs/methods/companies/get-all-companies) or 
  [recently modified (last 30 days) ](https://developers.hubspot.com/docs/methods/companies/get_companies_modified) can be retrieved. 
  NOTE: Fetches always 30 day period
  
  Following Company properties are fetched by default:
   
- ```json
- ['about_us', 'name', 'phone', 'facebook_company_page', 'city', 'country', 'website', 
- 'industry', 'annualrevenue', 'linkedin_company_page', 'hs_lastmodifieddate', 'hubspot_owner_id', 'notes_last_updated', 
- 'description', 'createdate', 'numberofemployees', 'hs_lead_status', 'founded_year', 'twitterhandle', 'linkedinbio']
+```json
+ ["about_us", "name", "phone", "facebook_company_page", "city", "country", "website", 
+ "industry", "annualrevenue", "linkedin_company_page", "hs_lastmodifieddate", "hubspot_owner_id", "notes_last_updated", 
+ "description", "createdate", "numberofemployees", "hs_lead_status", "founded_year", "twitterhandle", "linkedinbio"] 
 ```
  
 Custom properties may be specified in configuration, names must match with api names as specified by [Company Properties](https://developers.hubspot.com/docs/methods/companies/company-properties-overview)
@@ -41,18 +42,18 @@ Custom properties may be specified in configuration, names must match with api n
  
  Following Contact properties are fetched by default:
   
- ```json
- ['hs_facebookid', 'hs_linkedinid', 'ip_city', 'ip_country', 'ip_country_code', 'newsletter_opt_in', 'firstname', 
- 'linkedin_profile', 'lastname', 'email', 'mobilephone', 'phone', 'city', 'country', 'region', 'jobtitle', 
- 'company', 'website', 'numemployees', 'industry', 'associatedcompanyid', 'hs_lead_status', 
- 'lastmodifieddate', 'source', 'hs_email_optout', 'twitterhandle', 'lead_type', 'hubspot_owner_id', 
- 'notes_last_updated', 'hs_analytics_source', 'opt_in', 'createdate', 'hs_twitterid', 'lifecyclestage']
+```json
+ ["hs_facebookid", "hs_linkedinid", "ip_city", "ip_country", "ip_country_code", "newsletter_opt_in", "firstname", 
+ "linkedin_profile", "lastname", "email", "mobilephone", "phone", "city", "country", "region", "jobtitle", 
+ "company", "website", "numemployees", "industry", "associatedcompanyid", "hs_lead_status", 
+ "lastmodifieddate", "source", "hs_email_optout", "twitterhandle", "lead_type", "hubspot_owner_id", 
+ "notes_last_updated", "hs_analytics_source", "opt_in", "createdate", "hs_twitterid", "lifecyclestage"]
 ```
 
  **Note:** Following properties will be fetched each time, regardless configuration and with option `propertyMode=value_and_history`. This is currently hardcoded and 
  all other properties are fetched with value only:
  
- ```json
+```json
  ["company",
   "firstname",
   "lastmodifieddate",
@@ -70,12 +71,12 @@ Custom properties may be specified in configuration, names must match with api n
  
  Following Deal properties are fetched by default:
   
- ```json
-['authority', 'budget', 'campaign_source', 'hs_analytics_source', 'hs_campaign', 
-'hs_lastmodifieddate', 'need', 'timeframe', 'dealname', 'amount', 'closedate', 'pipeline', 
-'createdate', 'engagements_last_meeting_booked', 'dealtype', 'hs_createdate', 'description', 
-'start_date', 'closed_lost_reason', 'closed_won_reason', 'end_date', 'lead_owner', 'tech_owner', 
-'service_amount', 'contract_type', 'hubspot_owner_id', 'partner_name', 'notes_last_updated']
+```json
+["authority", "budget", "campaign_source", "hs_analytics_source", "hs_campaign", 
+"hs_lastmodifieddate", "need", "timeframe", "dealname", "amount", "closedate", "pipeline", 
+"createdate", "engagements_last_meeting_booked", "dealtype", "hs_createdate", "description", 
+"start_date", "closed_lost_reason", "closed_won_reason", "end_date", "lead_owner", "tech_owner", 
+"service_amount", "contract_type", "hubspot_owner_id", "partner_name", "notes_last_updated"]
 ```
  
 Custom properties may be specified in configuration, names must match with api names as specified by [Deal Properties](https://developers.hubspot.com/docs/methods/deals/deal_properties_overview)
