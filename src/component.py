@@ -33,6 +33,13 @@ KEY_API_TOKEN = '#api_token'
 KEY_PERIOD_FROM = 'period_from'
 KEY_ENDPOINTS = 'endpoints'
 
+KEY_COMPANY_PROPERTIES = 'company_properties'
+KEY_CONTACT_PROPERTIES = 'contact_properties'
+KEY_DEAL_PROPERTIES = 'deal_properties'
+
+SUPPORTED_ENDPOINTS = ['companies', 'campaigns', 'email_events', 'activities', 'lists', 'owners', 'contacts', 'deals',
+                       'pipelines']
+
 MANDATORY_PARS = [KEY_API_TOKEN]
 MANDATORY_IMAGE_PARS = []
 
@@ -79,39 +86,50 @@ class Component(KBCEnvHandler):
         else:
             start_date = None
             recent = False
+        endpoints = params.get(KEY_ENDPOINTS, SUPPORTED_ENDPOINTS)
 
-        logging.info('Extracting Companies')
-        res_file_path = os.path.join(self.tables_out_path, 'companies.csv')
-        self._get_simple_ds(res_file_path, COMPANY_ID_COL, client_service.get_companies, recent)
+        if 'companies' in endpoints:
+            logging.info('Extracting Companies')
+            res_file_path = os.path.join(self.tables_out_path, 'companies.csv')
+            self._get_simple_ds(res_file_path, COMPANY_ID_COL, client_service.get_companies, recent,
+                                self._parse_props(params.get(KEY_COMPANY_PROPERTIES)))
 
-        logging.info('Extracting Campaigns from HubSpot CRM')
-        res_file_path = os.path.join(self.tables_out_path, 'campaigns.csv')
-        self._get_simple_ds(res_file_path, CAMPAIGNS_PK, client_service.get_campaigns, recent)
+        if 'campaigns' in endpoints:
+            logging.info('Extracting Campaigns from HubSpot CRM')
+            res_file_path = os.path.join(self.tables_out_path, 'campaigns.csv')
+            self._get_simple_ds(res_file_path, CAMPAIGNS_PK, client_service.get_campaigns, recent)
 
-        logging.info('Extracting Email Events from HubSpot CRM')
-        res_file_path = os.path.join(self.tables_out_path, 'email_events.csv')
-        self._get_simple_ds(res_file_path, EMAIL_EVENTS_PK, client_service.get_email_events, start_date)
+        if 'email_events' in endpoints:
+            logging.info('Extracting Email Events from HubSpot CRM')
+            res_file_path = os.path.join(self.tables_out_path, 'email_events.csv')
+            self._get_simple_ds(res_file_path, EMAIL_EVENTS_PK, client_service.get_email_events, start_date)
 
-        logging.info('Extracting Activities from HubSpot CRM')
-        res_file_path = os.path.join(self.tables_out_path, 'activities.csv')
-        self._get_simple_ds(res_file_path, ACTIVITIES_PK, client_service.get_activities, start_date)
+        if 'activities' in endpoints:
+            logging.info('Extracting Activities from HubSpot CRM')
+            res_file_path = os.path.join(self.tables_out_path, 'activities.csv')
+            self._get_simple_ds(res_file_path, ACTIVITIES_PK, client_service.get_activities, start_date)
 
-        logging.info('Extracting Lists from HubSpot CRM')
-        res_file_path = os.path.join(self.tables_out_path, 'lists.csv')
-        self._get_simple_ds(res_file_path, LISTS_PK, client_service.get_lists)
+        if 'lists' in endpoints:
+            logging.info('Extracting Lists from HubSpot CRM')
+            res_file_path = os.path.join(self.tables_out_path, 'lists.csv')
+            self._get_simple_ds(res_file_path, LISTS_PK, client_service.get_lists)
 
-        logging.info('Extracting Owners from HubSpot CRM')
-        res_file_path = os.path.join(self.tables_out_path, 'owners.csv')
-        self._get_simple_ds(res_file_path, OWNER_PK, client_service.get_owners, recent)
+        if 'owners' in endpoints:
+            logging.info('Extracting Owners from HubSpot CRM')
+            res_file_path = os.path.join(self.tables_out_path, 'owners.csv')
+            self._get_simple_ds(res_file_path, OWNER_PK, client_service.get_owners, recent)
 
-        logging.info('Extracting Contacts from HubSpot CRM')
-        self.get_contacts(client_service, start_date)
+        if 'contacts' in endpoints:
+            logging.info('Extracting Contacts from HubSpot CRM')
+            self.get_contacts(client_service, start_date, self._parse_props(params.get(KEY_CONTACT_PROPERTIES)))
 
-        logging.info('Extracting Deals from HubSpot CRM')
-        self.get_deals(client_service, start_date)
+        if 'deals' in endpoints:
+            logging.info('Extracting Deals from HubSpot CRM')
+            self.get_deals(client_service, start_date, self._parse_props(params.get(KEY_DEAL_PROPERTIES)))
 
-        logging.info('Extracting Pipelines from HubSpot CRM')
-        self.get_pipelines(client_service)
+        if 'pipelines' in endpoints:
+            logging.info('Extracting Pipelines from HubSpot CRM')
+            self.get_pipelines(client_service)
 
     def _get_simple_ds(self, res_file_path, pkey, ds_getter, *fpars):
         """
@@ -129,9 +147,9 @@ class Component(KBCEnvHandler):
             self.configuration.write_table_manifest(file_name=res_file_path, primary_key=pkey, incremental=True)
 
     # CONTACTS
-    def get_contacts(self, client: HubspotClientService, start_time):
+    def get_contacts(self, client: HubspotClientService, start_time, fields):
         res_file_path = os.path.join(self.tables_out_path, 'contacts.csv')
-        for res in client.get_contacts(start_time):
+        for res in client.get_contacts(start_time, fields):
             self._store_contact_submission_and_list(res)
             res.drop(['form-submissions', 'list-memberships'], 1)
             self.output_file(res, res_file_path, res.columns)
@@ -172,10 +190,10 @@ class Component(KBCEnvHandler):
                 self.output_file(temp_contacts_lists, c_lists_path, temp_contacts_lists.columns)
 
     # DEALS
-    def get_deals(self, client: HubspotClientService, start_time):
+    def get_deals(self, client: HubspotClientService, start_time, fields):
         logging.info('Extracting Companies from HubSpot CRM')
         res_file_path = os.path.join(self.tables_out_path, 'deals.csv')
-        for res in client.get_deals(start_time):
+        for res in client.get_deals(start_time, fields):
             self.output_file(res, res_file_path, res.columns)
             self._store_deals_stage_hist_and_list(res)
 
@@ -258,6 +276,12 @@ class Component(KBCEnvHandler):
             with open(file_output, 'a', encoding='utf-8') as b:
                 data_output.to_csv(b, index=False, header=False, columns=column_headers)
             b.close()
+
+    def _parse_props(self, param):
+        cols = []
+        if param:
+            cols = [p.strip() for p in param.split(",")]
+        return cols
 
 
 """

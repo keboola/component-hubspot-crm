@@ -168,7 +168,8 @@ class HubspotClientService(HttpClientBase):
         Get either all available contacts or recent ones specified by start_time.
 
         API supports more options, possible to extend in the future
-        :param start_time:
+        :type fields: list list of contact properties to get
+        :param start_time: datetime
         :return: generator object with all available pages
         """
         offset = -1
@@ -242,6 +243,14 @@ class HubspotClientService(HttpClientBase):
         return prop_cols
 
     def get_deals(self, start_time=None, fields=None) -> Iterable:
+        """
+        Get either all available deals or recent ones specified by start_time.
+
+        API supports more options, possible to extend in the future
+        :type fields: list list of deal properties to get
+        :param start_time: datetime
+        :return: generator object with all available pages
+        """
         offset = 0
         if not fields:
             deal_properties = DEAL_DEFAULT_PROPERTIES
