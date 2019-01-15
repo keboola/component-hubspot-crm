@@ -34,11 +34,11 @@ DEAL_DEFAULT_COLS = ["associations.associatedCompanyIds",
                      "properties.hs_object_id.versions",
                      "stateChanges"]
 DEAL_DEFAULT_PROPERTIES = ['authority', 'budget', 'campaign_source', 'hs_analytics_source', 'hs_campaign',
-                           'hs_lastmodifieddate', 'need', 'partner_name', 'timeframe', 'dealname', 'amount',
-                           'closedate', 'pipeline',
+                           'hs_lastmodifieddate', 'need', 'timeframe', 'dealname', 'amount', 'closedate', 'pipeline',
                            'createdate', 'engagements_last_meeting_booked', 'dealtype', 'hs_createdate', 'description',
                            'start_date', 'closed_lost_reason', 'closed_won_reason', 'end_date', 'lead_owner',
-                           'tech_owner', 'service_amount', 'contract_type', 'hubspot_owner_id',
+                           'tech_owner', 'service_amount', 'contract_type',
+                           'hubspot_owner_id',
                            'partner_name', 'notes_last_updated']
 
 CONTACTS_DEFAULT_COLS = ["addedAt",

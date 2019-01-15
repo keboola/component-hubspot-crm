@@ -157,7 +157,6 @@ class Component(KBCEnvHandler):
             if len(row['form-submissions']) > 0:
                 temp_contacts_sub_forms = pd.DataFrame(row['form-submissions'])
                 temp_contacts_sub_forms['CONTACT_ID'] = row['canonical-vid']
-                print(temp_contacts_sub_forms.columns.values)
                 res_cols = CONTACT_FORM_SUBISSION_COLS
                 temp_contacts_sub_forms = temp_contacts_sub_forms.loc[:, res_cols].fillna('')
 
