@@ -288,7 +288,7 @@ class HubspotClientService(HttpClientBase):
                 DEAL_DEFAULT_PROPERTIES)
         else:
             deal_properties = fields
-            expected_deal_cols = COMPANIES_DEFAULT_COLS + self._build_property_cols(fields)
+            expected_deal_cols = DEAL_DEFAULT_COLS + self._build_property_cols(fields)
 
         parameters = {'properties': deal_properties, 'propertiesWithHistory': 'dealstage',
                       'includeAssociations': 'true'}
