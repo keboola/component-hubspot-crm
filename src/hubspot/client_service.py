@@ -108,7 +108,9 @@ ENGAGEMENTS_COLS = ['metadata.isBot', 'metadata.endTime', 'metadata.postSendStat
                     'metadata.validationSkipped', 'metadata.loggedFrom', 'metadata.mediaProcessingStatus',
                     'metadata.threadId', 'metadata.reminders', 'metadata.status', 'metadata.name',
                     'engagement.timestamp', 'metadata.contentId', 'metadata.campaignGuid', 'metadata.taskType',
-                    'metadata.bcc', 'scheduledTasks', 'engagement.active', 'metadata.attachedVideoWatched']
+                    'metadata.bcc', 'scheduledTasks', 'engagement.active', 'metadata.attachedVideoWatched',
+                    'engagement.teamId', 'metadata.to.email', 'metadata.calleeObjectId', 'metadata.calleeObjectType',
+                    'metadata.emailSendEventId.created', 'metadata.emailSendEventId.id', 'metadata.errorMessage']
 
 CAMPAIGNS = 'email/public/v1/campaigns/'
 
