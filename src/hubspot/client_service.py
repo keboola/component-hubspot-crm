@@ -165,7 +165,7 @@ class HubspotClientService(HttpClientBase):
                 has_more = False
             offset = req_response[offset_resp_attr]
             final_df = final_df.append(json_normalize(req_response[res_obj_name]))
-            if default_cols:
+            if default_cols and not final_df.empty:
                 # dedupe
                 default_cols = list(set(default_cols))
                 final_df = final_df.loc[:, default_cols].fillna('')
