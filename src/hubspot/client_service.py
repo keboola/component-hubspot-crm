@@ -84,17 +84,28 @@ EMAIL_EVENTS_COLS = ['appId', 'appName', 'browser', 'browser.family', 'browser.n
                      'ipAddress', 'location', 'location.city', 'location.country', 'location.state', 'portalId',
                      'recipient', 'sentBy.created', 'sentBy.id', 'smtpId', 'type', 'userAgent']
 
-ENGAGEMENTS_COLS = [
-    "engagement.id", "engagement.portalId", "engagement.active",
-    "engagement.createdAt", "engagement.lastUpdated", "engagement.ownerId", "engagement.type", "engagement.timestamp",
-    "associations.contactIds", "associations.companyIds", "associations.dealIds", "associations.ownerIds",
-    "associations.workflowIds", "associations.ticketIds", "attachments", "metadata.body", "metadata.fromemail",
-    "metadata.fromfirstName", "metadata.fromlastName", "metadata.to.email", "metadata.cc", "metadata.bcc",
-    "metadata.subject", "metadata.html", "metadata.text", "metadata.body", "metadata.subject", "metadata.status",
-    "metadata.forObjectType", "metadata.startTime", "metadata.endTime", "metadata.title", "metadata.toNumber",
-    "metadata.fromNumber", "metadata.status", "metadata.externalId", "metadata.durationMilliseconds",
-    "metadata.externalAccountId", "metadata.recordingUrl", "metadata.body", "metadata.disposition"
-]
+ENGAGEMENTS_COLS = ['metadata.messageId', 'metadata.validationSkipped', 'metadata.name', 'metadata.externalUrl',
+                    'metadata.facsimileSendId', 'engagement.createdBy', 'metadata.source',
+                    'metadata.attachedVideoWatched', 'metadata.status', 'engagement.modifiedBy',
+                    'metadata.calleeObjectId', 'metadata.calleeObjectType', 'metadata.trackerKey', 'metadata.endTime',
+                    'metadata', 'metadata.body', 'metadata.sourceId', 'engagement.id', 'metadata.from.raw',
+                    'metadata.postSendStatus', 'metadata.disposition', 'associations.quoteIds', 'metadata.html',
+                    'associations.ticketIds', 'metadata.bcc', 'metadata.reminders', 'metadata.sender.email',
+                    'engagement.portalId', 'metadata.sendDefaultReminder', 'metadata.text', 'metadata.cc',
+                    'metadata.category', 'associations.workflowIds', 'metadata.from.email', 'metadata.recordingUrl',
+                    'metadata.to.email', 'engagement.createdAt', 'metadata.fromNumber', 'metadata.campaignGuid',
+                    'metadata.externalAccountId', 'metadata.taskType', 'metadata.recipientDropReasons',
+                    'engagement.allAccessibleTeamIds', 'engagement.ownerId', 'associations.contactIds',
+                    'engagement.active', 'associations.companyIds', 'attachments', 'metadata.threadId',
+                    'associations.ownerIds', 'metadata.state', 'metadata.title', 'engagement.lastUpdated',
+                    'metadata.emailSendEventId.id', 'metadata.durationMilliseconds', 'metadata.startTime',
+                    'metadata.categoryId', 'metadata.createdFromLinkId', 'engagement.type',
+                    'metadata.attachedVideoOpened', 'engagement.source', 'metadata.emailSendEventId.created',
+                    'metadata.errorMessage', 'scheduledTasks', 'metadata.preMeetingProspectReminders', 'metadata.to',
+                    'metadata.subject', 'metadata.mediaProcessingStatus', 'engagement.uid', 'associations.dealIds',
+                    'engagement.timestamp', 'metadata.externalId', 'associations.contentIds',
+                    'metadata.transcriptionId', 'metadata.loggedFrom', 'metadata.from.firstName', 'engagement.teamId',
+                    'metadata.toNumber', 'metadata.forObjectType', 'metadata.sentVia', 'metadata.from.lastName']
 
 CAMPAIGNS = 'email/public/v1/campaigns/'
 
