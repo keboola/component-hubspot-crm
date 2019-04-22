@@ -150,12 +150,18 @@ class Component(KBCEnvHandler):
     def get_contacts(self, client: HubspotClientService, start_time, fields):
         res_file_path = os.path.join(self.tables_out_path, 'contacts.csv')
         for res in client.get_contacts(start_time, fields):
-            self._store_contact_submission_and_list(res)
-            res.drop(['form-submissions', 'list-memberships'], 1)
+            if len(res.columns.values) == 0:
+                logging.info("No contact records for specified period.")
+                continue
+            if 'form-submissions' in res.columns and 'list-memberships' in res.columns:
+                self._store_contact_submission_and_list(res)
+                res.drop(['form-submissions', 'list-memberships'], 1)
             self.output_file(res, res_file_path, res.columns)
 
         # store manifests
-        self.configuration.write_table_manifest(file_name=res_file_path, primary_key=CONTACT_PK, incremental=True)
+        if os.path.isfile(res_file_path):
+            self.configuration.write_table_manifest(file_name=res_file_path, primary_key=CONTACT_PK, incremental=True)
+
         c_subform_path = os.path.join(self.tables_out_path, 'contacts_form_submissions.csv')
         c_lists_path = os.path.join(self.tables_out_path, 'contacts_lists.csv')
         if os.path.isfile(c_subform_path):
