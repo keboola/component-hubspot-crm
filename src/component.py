@@ -153,9 +153,9 @@ class Component(KBCEnvHandler):
             if len(res.columns.values) == 0:
                 logging.info("No contact records for specified period.")
                 continue
-            if 'form-submissions' in res.columns and 'list-memberships' in res.columns:
+            if 'form-submissions' in res.columns or 'list-memberships' in res.columns:
                 self._store_contact_submission_and_list(res)
-                res.drop(['form-submissions', 'list-memberships'], 1)
+                res.drop(['form-submissions', 'list-memberships'], 1, inplace=True)
             self.output_file(res, res_file_path, res.columns)
 
         # store manifests
