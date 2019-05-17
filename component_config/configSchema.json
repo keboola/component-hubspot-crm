@@ -7,7 +7,8 @@
     "endpoints",
     "company_properties",
     "contact_properties",
-    "deal_properties"
+    "deal_properties",
+    "property_attributes"
   ],
   "properties": {
     "endpoints": {
@@ -52,6 +53,41 @@
       "title": "Period from date [including]",
       "description": "Date in YYYY-MM-DD format or dateparser string i.e. 5 days ago, 1 month ago, yesterday, etc. If left empty, all records are downloaded.",
       "propertyOrder": 300
+    },
+    "property_attributes": {
+      "type": "object",
+      "title": "Property attributes",
+      "description": "Add additional attributes to each custom property. Applicable for Contacts, Companies and Deals.",
+      "options": {
+        "expand_height": true
+      },
+      "propertyOrder": 360,
+      "required": [
+        "include_versions",
+        "include_source",
+        "include_timestamp"
+      ],
+      "format": "grid",
+      "properties": {
+        "include_versions": {
+          "type": "boolean",
+          "title": "Include attribute versions",
+          "description": "A list of previous versions of the property. The first item in the list will be the current version",
+          "default": true
+        },
+        "include_source": {
+          "type": "boolean",
+          "title": "Include source attribute",
+          "description": "The method by which this version was set.",
+          "default": true
+        },
+        "include_timestamp": {
+          "type": "boolean",
+          "title": "Include timestamp attribute?",
+          "description": "A Unix timestamp (in milliseconds) of the time when this version was set",
+          "default": true
+        }
+      }
     },
     "deal_properties": {
       "type": "string",
