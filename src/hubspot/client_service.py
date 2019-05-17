@@ -22,18 +22,10 @@ DEAL_DEFAULT_COLS = ["associations.associatedCompanyIds",
                      "imports",
                      "isDeleted",
                      "portalId",
-                     "properties.dealstage.source",
-                     "properties.dealstage.sourceId",
-                     "properties.dealstage.timestamp",
-                     "properties.dealstage.value",
-                     "properties.dealstage.versions",
-                     "properties.hs_object_id.source",
-                     "properties.hs_object_id.sourceId",
-                     "properties.hs_object_id.timestamp",
-                     "properties.hs_object_id.value",
-                     "properties.hs_object_id.versions",
                      "stateChanges"]
-DEAL_DEFAULT_PROPERTIES = ['authority', 'budget', 'campaign_source', 'hs_analytics_source', 'hs_campaign',
+
+DEAL_DEFAULT_PROPERTIES = ["dealstage", "hs_object_id", 'authority', 'budget', 'campaign_source', 'hs_analytics_source',
+                           'hs_campaign',
                            'hs_lastmodifieddate', 'need', 'timeframe', 'dealname', 'amount', 'closedate', 'pipeline',
                            'createdate', 'engagements_last_meeting_booked', 'dealtype', 'hs_createdate', 'description',
                            'start_date', 'closed_lost_reason', 'closed_won_reason', 'end_date', 'lead_owner',
@@ -52,14 +44,6 @@ CONTACTS_DEFAULT_COLS = ["addedAt",
                          "portal-id",
                          "profile-token",
                          "profile-url",
-                         "properties.company.value",
-                         "properties.company.versions",
-                         "properties.firstname.value",
-                         "properties.firstname.versions",
-                         "properties.lastmodifieddate.value",
-                         "properties.lastmodifieddate.versions",
-                         "properties.lastname.value",
-                         "properties.lastname.versions",
                          "vid"]
 
 CONTACT_DEFAULT_PROPERTIES = ['hs_facebookid', 'hs_linkedinid', 'ip_city', 'ip_country',
@@ -193,7 +177,7 @@ class HubspotClientService(HttpClientBase):
             offset = req_response[offset_attr]
             return final_df.append(json_normalize(req_response[res_obj_name]))
 
-    def get_contacts(self, start_time=None, fields=None) -> Iterable:
+    def get_contacts(self, property_attributes, start_time=None, fields=None) -> Iterable:
         """
         Get either all available contacts or recent ones specified by start_time.
 
@@ -206,11 +190,11 @@ class HubspotClientService(HttpClientBase):
 
         if not fields:
             contact_properties = CONTACT_DEFAULT_PROPERTIES
-            expected_contact_cols = CONTACTS_DEFAULT_COLS + self._build_contact_property_cols(
-                CONTACTS_DEFAULT_COLS)
+            expected_contact_cols = CONTACTS_DEFAULT_COLS + self._build_property_cols(
+                CONTACTS_DEFAULT_COLS, property_attributes)
         else:
             contact_properties = fields
-            expected_contact_cols = CONTACTS_DEFAULT_COLS + self._build_property_cols(fields)
+            expected_contact_cols = CONTACTS_DEFAULT_COLS + self._build_property_cols(fields, property_attributes)
 
         parameters = {'property': contact_properties, 'formSubmissionMode': 'all', 'showListMemberships': 'true'}
 
@@ -227,16 +211,16 @@ class HubspotClientService(HttpClientBase):
                                                 'vid-offset', 'has-more', offset, 100,
                                                 default_cols=expected_contact_cols)
 
-    def get_companies(self, recent=False, fields=None):
+    def get_companies(self, property_attributes, recent=False, fields=None):
 
         offset = 0
         if not fields:
             company_properties = COMPANY_DEFAULT_PROPERTIES
             expected_company_cols = COMPANIES_DEFAULT_COLS + self._build_property_cols(
-                COMPANY_DEFAULT_PROPERTIES)
+                COMPANY_DEFAULT_PROPERTIES, property_attributes)
         else:
             company_properties = fields
-            expected_company_cols = COMPANIES_DEFAULT_COLS + self._build_property_cols(fields)
+            expected_company_cols = COMPANIES_DEFAULT_COLS + self._build_property_cols(fields, property_attributes)
 
         parameters = {'properties': company_properties}
 
@@ -253,15 +237,19 @@ class HubspotClientService(HttpClientBase):
         req_response = req.json()
         return req_response
 
-    def _build_property_cols(self, properties):
+    def _build_property_cols(self, properties, property_attributes):
         # get flattened property cols
         prop_cols = []
         for p in properties:
-            prop_cols.append('properties.' + p + '.source')
-            prop_cols.append('properties.' + p + '.sourceId')
-            prop_cols.append('properties.' + p + '.timestamp')
+            if property_attributes.get('include_source', True):
+                prop_cols.append('properties.' + p + '.source')
+                prop_cols.append('properties.' + p + '.sourceId')
+            if property_attributes.get('include_timestamp', True):
+                prop_cols.append('properties.' + p + '.timestamp')
+            if property_attributes.get('include_versions', True):
+                prop_cols.append('properties.' + p + '.versions')
+
             prop_cols.append('properties.' + p + '.value')
-            prop_cols.append('properties.' + p + '.versions')
         return prop_cols
 
     def _build_contact_property_cols(self, properties):
@@ -272,7 +260,7 @@ class HubspotClientService(HttpClientBase):
             prop_cols.append('properties.' + p + '.versions')
         return prop_cols
 
-    def get_deals(self, start_time=None, fields=None) -> Iterable:
+    def get_deals(self, property_attributes, start_time=None, fields=None) -> Iterable:
         """
         Get either all available deals or recent ones specified by start_time.
 
@@ -285,10 +273,10 @@ class HubspotClientService(HttpClientBase):
         if not fields:
             deal_properties = DEAL_DEFAULT_PROPERTIES
             expected_deal_cols = DEAL_DEFAULT_COLS + self._build_property_cols(
-                DEAL_DEFAULT_PROPERTIES)
+                DEAL_DEFAULT_PROPERTIES, property_attributes)
         else:
             deal_properties = fields
-            expected_deal_cols = DEAL_DEFAULT_COLS + self._build_property_cols(fields)
+            expected_deal_cols = DEAL_DEFAULT_COLS + self._build_property_cols(fields, property_attributes)
 
         parameters = {'properties': deal_properties, 'propertiesWithHistory': 'dealstage',
                       'includeAssociations': 'true'}

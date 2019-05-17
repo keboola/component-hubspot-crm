@@ -37,6 +37,8 @@ KEY_COMPANY_PROPERTIES = 'company_properties'
 KEY_CONTACT_PROPERTIES = 'contact_properties'
 KEY_DEAL_PROPERTIES = 'deal_properties'
 
+KEY_PROPERTY_ATTRIBUTES = "property_attributes"
+
 SUPPORTED_ENDPOINTS = ['companies', 'campaigns', 'email_events', 'activities', 'lists', 'owners', 'contacts', 'deals',
                        'pipelines']
 
@@ -87,12 +89,14 @@ class Component(KBCEnvHandler):
             start_date = None
             recent = False
         endpoints = params.get(KEY_ENDPOINTS, SUPPORTED_ENDPOINTS)
+        property_attributes = params.get(KEY_PROPERTY_ATTRIBUTES,
+                                         {"include_versions": True, "include_source": True, "include_timestamp": True})
 
         if 'companies' in endpoints:
             logging.info('Extracting Companies')
             res_file_path = os.path.join(self.tables_out_path, 'companies.csv')
-            self._get_simple_ds(res_file_path, COMPANY_ID_COL, client_service.get_companies, recent,
-                                self._parse_props(params.get(KEY_COMPANY_PROPERTIES)))
+            self._get_simple_ds(res_file_path, COMPANY_ID_COL, client_service.get_companies, property_attributes,
+                                recent, self._parse_props(params.get(KEY_COMPANY_PROPERTIES)))
 
         if 'campaigns' in endpoints:
             logging.info('Extracting Campaigns from HubSpot CRM')
@@ -121,11 +125,13 @@ class Component(KBCEnvHandler):
 
         if 'contacts' in endpoints:
             logging.info('Extracting Contacts from HubSpot CRM')
-            self.get_contacts(client_service, start_date, self._parse_props(params.get(KEY_CONTACT_PROPERTIES)))
+            self.get_contacts(client_service, start_date, self._parse_props(params.get(KEY_CONTACT_PROPERTIES)),
+                              property_attributes)
 
         if 'deals' in endpoints:
             logging.info('Extracting Deals from HubSpot CRM')
-            self.get_deals(client_service, start_date, self._parse_props(params.get(KEY_DEAL_PROPERTIES)))
+            self.get_deals(client_service, start_date, self._parse_props(params.get(KEY_DEAL_PROPERTIES)),
+                           property_attributes)
 
         if 'pipelines' in endpoints:
             logging.info('Extracting Pipelines from HubSpot CRM')
@@ -147,9 +153,9 @@ class Component(KBCEnvHandler):
             self.configuration.write_table_manifest(file_name=res_file_path, primary_key=pkey, incremental=True)
 
     # CONTACTS
-    def get_contacts(self, client: HubspotClientService, start_time, fields):
+    def get_contacts(self, client: HubspotClientService, start_time, fields, property_attributes):
         res_file_path = os.path.join(self.tables_out_path, 'contacts.csv')
-        for res in client.get_contacts(start_time, fields):
+        for res in client.get_contacts(property_attributes, start_time, fields):
             if len(res.columns.values) == 0:
                 logging.info("No contact records for specified period.")
                 continue
@@ -196,10 +202,10 @@ class Component(KBCEnvHandler):
                 self.output_file(temp_contacts_lists, c_lists_path, temp_contacts_lists.columns)
 
     # DEALS
-    def get_deals(self, client: HubspotClientService, start_time, fields):
+    def get_deals(self, client: HubspotClientService, start_time, fields, property_attributes):
         logging.info('Extracting Companies from HubSpot CRM')
         res_file_path = os.path.join(self.tables_out_path, 'deals.csv')
-        for res in client.get_deals(start_time, fields):
+        for res in client.get_deals(property_attributes, start_time, fields):
             self.output_file(res, res_file_path, res.columns)
             self._store_deals_stage_hist_and_list(res)
 
