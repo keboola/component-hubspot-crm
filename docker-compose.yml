@@ -9,6 +9,7 @@ services:
     environment:
       - KBC_DATADIR=./data
   test:
+    # Use to run flake8 and unittests checks
     build: .
     volumes:
       - ./:/code
@@ -16,4 +17,5 @@ services:
     environment:
       - KBC_DATADIR=./data
     command:
-      - python -m unittest discover
+      - /bin/sh
+      - /code/scripts/build_n_test.sh
