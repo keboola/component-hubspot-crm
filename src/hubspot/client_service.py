@@ -275,6 +275,8 @@ class HubspotClientService(HttpClientBase):
             expected_deal_cols = DEAL_DEFAULT_COLS + self._build_property_cols(
                 DEAL_DEFAULT_PROPERTIES, property_attributes)
         else:
+            if 'dealstage' in fields:
+                fields.remove('dealstage')
             deal_properties = fields
             expected_deal_cols = DEAL_DEFAULT_COLS + self._build_property_cols(fields, property_attributes)
 
