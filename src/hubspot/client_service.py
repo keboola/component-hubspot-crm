@@ -1,9 +1,9 @@
 import json
 from _datetime import timedelta
-from collections.abc import Iterable
-from datetime import datetime
 
 import pandas as pd
+from collections.abc import Iterable
+from datetime import datetime
 from kbc.client_base import HttpClientBase
 from pandas.io.json import json_normalize
 
@@ -24,7 +24,7 @@ DEAL_DEFAULT_COLS = ["associations.associatedCompanyIds",
                      "portalId",
                      "stateChanges"]
 
-DEAL_DEFAULT_PROPERTIES = ["dealstage", "hs_object_id", 'authority', 'budget', 'campaign_source', 'hs_analytics_source',
+DEAL_DEFAULT_PROPERTIES = ["hs_object_id", 'authority', 'budget', 'campaign_source', 'hs_analytics_source',
                            'hs_campaign',
                            'hs_lastmodifieddate', 'need', 'timeframe', 'dealname', 'amount', 'closedate', 'pipeline',
                            'createdate', 'engagements_last_meeting_booked', 'dealtype', 'hs_createdate', 'description',
@@ -278,7 +278,10 @@ class HubspotClientService(HttpClientBase):
             deal_properties = fields
             expected_deal_cols = DEAL_DEFAULT_COLS + self._build_property_cols(fields, property_attributes)
 
-        parameters = {'properties': deal_properties, 'propertiesWithHistory': 'dealstage',
+        property_attributes['include_versions'] = True
+        expected_deal_cols += self._build_property_cols(['dealstage'], property_attributes)
+        parameters = {'properties': deal_properties,
+                      'propertiesWithHistory': 'dealstage',
                       'includeAssociations': 'true'}
         if start_time:
             parameters['since'] = int(start_time.timestamp() * 1000)

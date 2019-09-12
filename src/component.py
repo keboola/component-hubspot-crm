@@ -5,9 +5,9 @@ Template Component main class.
 
 import logging
 import os
-from datetime import datetime
 
 import pandas as pd
+from datetime import datetime
 from kbc.env_handler import KBCEnvHandler
 
 from hubspot.client_service import HubspotClientService
@@ -281,12 +281,12 @@ class Component(KBCEnvHandler):
             return
 
         if not os.path.isfile(file_output):
-            with open(file_output, 'w+', encoding='utf-8') as b:
-                data_output.to_csv(b, index=False, columns=column_headers)
+            with open(file_output, 'w+', encoding='utf-8', newline='') as b:
+                data_output.to_csv(b, index=False, columns=column_headers, line_terminator="")
             b.close()
         else:
-            with open(file_output, 'a', encoding='utf-8') as b:
-                data_output.to_csv(b, index=False, header=False, columns=column_headers)
+            with open(file_output, 'a', encoding='utf-8', newline='') as b:
+                data_output.to_csv(b, index=False, header=False, columns=column_headers, line_terminator="")
             b.close()
 
     def _parse_props(self, param):
