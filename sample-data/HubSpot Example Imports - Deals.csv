@@ -1,0 +1,16 @@
+Deal Name,Deal Stage,Pipeline,Amount,Close Date,Deal Owner,Product of Interest,Point of Contact
+Dunder Mifflin,Appointment Scheduled,Sales Pipeline,"$3,760",3/16/2018,mmitchell@hubspot.com,Paper,Michael Scott
+Luke's Cafe,Proposal Sent,Sales Pipeline,"$2,500",1/23/2019,mmitchell@hubspot.com,CRM,Lorelai Gilmore
+Central Perk,Closed Won,Sales Pipeline,"$15,000",11/11/2018,mmitchell@hubspot.com,Marketing Starter,Monica Gellar
+,,,,,,,
+Default deal property,Default deal property,Default deal property,Default deal property,Default deal property,Default deal property,Custom Property,Custom Property
+,,,,,,,
+Please note:,,,,,,,
+"Deal Stage is a required field, and must match the stages set in the deals pipeline. We recommend that you customize your deal pipeline prior to import by going to Settings > Sales > Deals, then click on the name of the pipeline and editing the pipeline appropriately.",,,,,,,
+,,,,,,,
+Your Import Checklist Criteria:,,,,,,,
+1. Does every piece of information have its own unique column?,,,,,,,
+"2. HubSpot default properties have their own values in HubSpot, do the same values appear in the columns?",,,,,,,
+3. Do your deal stage values match what's in your current pipeline settings?,,,,,,,
+3. Are your custom properties created in HubSpot?,,,,,,,
+"4. Are there blank spaces (besides those below your data), stray column headers, or loose information in your spreadsheet? If so, please remove them.",,,,,,,

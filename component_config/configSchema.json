@@ -40,7 +40,7 @@
         "pipelines"
       ],
       "uniqueItems": true,
-      "propertyOrder": 400
+      "propertyOrder": 360
     },
     "#api_token": {
       "type": "string",
@@ -56,12 +56,12 @@
     },
     "property_attributes": {
       "type": "object",
-      "title": "Property attributes",
+      "title": "Property additional attributes",
       "description": "Add additional attributes to each custom property. Applicable for Contacts, Companies and Deals.",
       "options": {
         "expand_height": true
       },
-      "propertyOrder": 360,
+      "propertyOrder": 400,
       "required": [
         "include_versions",
         "include_source",
@@ -91,7 +91,7 @@
     },
     "deal_properties": {
       "type": "string",
-      "title": "Deal properties",
+      "title": "Deal additional properties",
       "format": "textarea",
       "default": "authority, budget, campaign_source, hs_analytics_source, hs_campaign, hs_lastmodifieddate, need, timeframe, dealname, amount, closedate, pipeline, createdate, engagements_last_meeting_booked, dealtype, hs_createdate, description, start_date, closed_lost_reason, closed_won_reason, end_date, lead_owner, tech_owner, service_amount, contract_type, hubspot_owner_id, partner_name, notes_last_updated",
       "options": {
@@ -103,7 +103,7 @@
     },
     "company_properties": {
       "type": "string",
-      "title": "Company properties",
+      "title": "Company additional properties",
       "format": "textarea",
       "default": "about_us, name, phone, facebook_company_page, city, country, website, industry, annualrevenue, linkedin_company_page, hs_lastmodifieddate, hubspot_owner_id, notes_last_updated, description, createdate, numberofemployees, hs_lead_status, founded_year, twitterhandle, linkedinbio",
       "options": {

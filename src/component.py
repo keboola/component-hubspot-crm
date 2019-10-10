@@ -202,11 +202,11 @@ class Component(KBCEnvHandler):
                 continue
             if 'form-submissions' in res.columns or 'list-memberships' in res.columns:
                 self._store_contact_submission_and_list(res)
-                res.drop(['form-submissions', 'list-memberships'], 1, inplace=True)
+                res.drop(['form-submissions', 'list-memberships'], 1, inplace=True, errors='ignore')
 
             if 'identity-profiles' in res.columns:
                 self._store_contact_identity_profiles(res)
-                res.drop(['identity-profiles'], 1, inplace=True)
+                res.drop(['identity-profiles'], 1, inplace=True, errors='ignore')
 
             self.output_file(res, res_file_path, res.columns)
             # store columns
@@ -297,10 +297,12 @@ class Component(KBCEnvHandler):
         res_file_path = os.path.join(self.tables_out_path, 'deals.csv')
         res_columns = list()
         for res in client.get_deals(property_attributes, start_time, fields):
-            self.output_file(res, res_file_path, res.columns)
             self._store_deals_stage_hist_and_list(res)
-            res.drop(['properties.dealstage.versions'], 1, inplace=True)
-            res.drop(['associations.associatedVids'], 1, inplace=True)
+            res.drop(['properties.dealstage.versions'], 1, inplace=True, errors='ignore')
+            res.drop(['associations.associatedVids'], 1, inplace=True, errors='ignore')
+            res.drop(['associations.associatedDealIds'], 1, inplace=True, errors='ignore')
+            res.drop(['associations.associatedCompanyIds'], 1, inplace=True, errors='ignore')
+            self.output_file(res, res_file_path, res.columns)
             # store columns
             res_columns = list(res.columns.values)
 
@@ -314,8 +316,10 @@ class Component(KBCEnvHandler):
 
         stage_hist_path = os.path.join(self.tables_out_path, 'deals_stage_history.csv')
         c_lists_path = os.path.join(self.tables_out_path, 'deals_contacts_list.csv')
+        deal_lists_path = os.path.join(self.tables_out_path, 'deals_assoc_deals_list.csv')
+        companies_lists_path = os.path.join(self.tables_out_path, 'deals_assoc_companies_list.csv')
         # Create table with Deals' Stage History & Deals' Contacts List
-        c_list_cols, stage_his_cols = None, None
+        c_list_cols, stage_his_cols, comp_list_cols, ass_deal_list_cols = None, None, None, None
         for index, row in deals.iterrows():
 
             if row.get('properties.dealstage.versions') and str(
@@ -335,6 +339,20 @@ class Component(KBCEnvHandler):
                 self.output_file(temp_deals_contacts_list, c_lists_path, temp_deals_contacts_list.columns)
                 c_list_cols = list(temp_deals_contacts_list.columns.values)
 
+            if row.get('associations.associatedCompanyIds') and len(row['associations.associatedCompanyIds']) != '[]':
+                comp_list = pd.DataFrame(row['associations.associatedCompanyIds'],
+                                         columns=['associated_companyId'])
+                comp_list['dealId'] = row['dealId']
+                self.output_file(comp_list, c_lists_path, comp_list.columns)
+                comp_list_cols = list(comp_list.columns.values)
+
+            if row.get('associations.associatedDealIds') and len(row['associations.associatedDealIds']) != '[]':
+                ass_deal_list = pd.DataFrame(row['associations.associatedDealIds'],
+                                             columns=['associated_dealId'])
+                ass_deal_list['dealId'] = row['dealId']
+                self.output_file(ass_deal_list, c_lists_path, ass_deal_list.columns)
+                ass_deal_list_cols = list(ass_deal_list.columns.values)
+
         if os.path.isfile(stage_hist_path):
             self.configuration.write_table_manifest(file_name=stage_hist_path, primary_key=DEAL_STAGE_HIST_PK,
                                                     columns=stage_his_cols,
@@ -342,6 +360,15 @@ class Component(KBCEnvHandler):
         if os.path.isfile(c_lists_path):
             self.configuration.write_table_manifest(file_name=c_lists_path, primary_key=DEAL_C_LIST_PK,
                                                     columns=c_list_cols,
+                                                    incremental=True)
+        if os.path.isfile(deal_lists_path):
+            self.configuration.write_table_manifest(file_name=c_lists_path, primary_key=['dealId', 'associated_dealId'],
+                                                    columns=ass_deal_list_cols,
+                                                    incremental=True)
+        if os.path.isfile(companies_lists_path):
+            self.configuration.write_table_manifest(file_name=companies_lists_path,
+                                                    primary_key=['dealId', 'associated_companyId'],
+                                                    columns=comp_list_cols,
                                                     incremental=True)
 
     # PIPELINES
@@ -352,7 +379,7 @@ class Component(KBCEnvHandler):
         for res in client.get_pipelines():
             self.output_file(res, res_file_path, res.columns)
             self._store_pipeline_stages(res)
-            res.drop(['stages'], 1, inplace=True)
+            res.drop(['stages'], 1, inplace=True, errors='ignore')
             res_columns = list(res.columns.values)
 
         # store manifests
@@ -391,7 +418,7 @@ class Component(KBCEnvHandler):
 
         if not os.path.isfile(file_output):
             with open(file_output, 'w+', encoding='utf-8', newline='') as b:
-                data_output.to_csv(b, index=False, header=False, columns=column_headers, line_terminator="")
+                data_output.to_csv(b, index=False, header=True, columns=column_headers, line_terminator="")
             b.close()
         else:
             with open(file_output, 'a', encoding='utf-8', newline='') as b:
