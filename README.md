@@ -21,6 +21,7 @@ KBC Component for data retrieval from [Hubspot API](https://developers.hubspot.c
 
 ### Endpoints
 List of endpoints to download. Currently supported are:
+
 - Deals  
 - Pipelines  
 - Campaigns  
@@ -33,13 +34,16 @@ For more info see the **Supported endpoints** section
 
 ### **Additional Property attributes**
 Additional attributes that are fetched for each specified property. Applies only for `companies`,`contacts` and `deals` endpoint, for which it is possible to define a list of additional properties.
+
 - **`Include source attribute`** - includes additional attributes `[property_name]_source` and `[property_name]_sourceId` that specify the method by which the value was set.
 - **`Include timestamp attribute`** -  includes additional attributes `[property_name]_timestamp` A Unix timestamp (in milliseconds) of the time the property was last set.
 - **`Include attribute versions`** - includes additional attributes `[property_name]_timestamp` A list of previous versions of the property. The first item in the list will be the current version. This field contains a JSON array value.
 
-**Company properties** - [OPT] Additional list of properties, names must match with api names as specified by [Company Properties](https://developers.hubspot.com/docs/methods/companies/company-properties-overview).  The endpoint must be listed in `endpoints` parameter for this to take effect. 
-**Contact properties** -[OPT]  Additional list of properties, names must match with api names as specified by [Deal Properties](https://developers.hubspot.com/docs/methods/deals/deal_properties_overview)  The endpoint must be listed in `endpoints` parameter for this to take effect. 
-**Deal properties** - [OPT] Additional list of properties, names must match with api names as specified by [Deal Properties](https://developers.hubspot.com/docs/methods/deals/deal_properties_overview)  The endpoint must be listed in `endpoints` parameter for this to take effect. 
+### Additional properties
+
+- **Company properties** - [OPT] Additional list of properties, names must match with api names as specified by [Company Properties](https://developers.hubspot.com/docs/methods/companies/company-properties-overview).  The endpoint must be listed in `endpoints` parameter for this to take effect. 
+- **Contact properties** -[OPT]  Additional list of properties, names must match with api names as specified by [Deal Properties](https://developers.hubspot.com/docs/methods/deals/deal_properties_overview)  The endpoint must be listed in `endpoints` parameter for this to take effect. 
+- **Deal properties** - [OPT] Additional list of properties, names must match with api names as specified by [Deal Properties](https://developers.hubspot.com/docs/methods/deals/deal_properties_overview)  The endpoint must be listed in `endpoints` parameter for this to take effect. 
 
  
 # Functionality  
@@ -83,7 +87,9 @@ this is set by `Date From` parameter. In most of the cases maximum of last 30 da
 
 Custom properties may be specified in configuration, names must match with api names as specified by [Company Properties](https://developers.hubspot.com/docs/methods/companies/company-properties-overview)  
 
-**Result tables** : `companies`     
+**Result tables** : 
+
+- `companies`     
   
 ## Contacts      
 
@@ -109,7 +115,13 @@ Custom properties may be specified in configuration, names must match with api n
    
   Custom properties may be specified in configuration, names must match with api names as specified by [Contact Properties](https://developers.hubspot.com/docs/methods/contacts/contact-properties-overview)  
    
-**Result tables** : `contacts`, `contacts_form_submissions`, `contacts_lists`, `contacts_identity_profile_identities`, `contacts_identity_profiles`  
+**Result tables** : 
+
+- `contacts`
+- `contacts_form_submissions`
+- `contacts_lists`
+- `contacts_identity_profile_identities`
+- `contacts_identity_profiles`  
 
 ## Deals      
  [All deals](https://developers.hubspot.com/docs/methods/deals/get-all-deals) or   
@@ -123,26 +135,39 @@ Custom properties may be specified in configuration, names must match with api n
 ```  
   Custom properties may be specified in configuration, names must match with api names as specified by [Deal Properties](https://developers.hubspot.com/docs/methods/deals/deal_properties_overview)  
    
-**Result tables** : `deals`, `deals_stage_history`, `deals_contacts_list`, `deals_assoc_deals_list`, `deals_assoc_companies_list` 
+**Result tables** : 
+
+- `deals`
+- `deals_stage_history`
+- `deals_contacts_list`
+- `deals_assoc_deals_list`
+- `deals_assoc_companies_list` 
  
 ## Pipelines  
 [All pipelines](https://developers.hubspot.com/docs/methods/pipelines/get_pipelines_for_object_type) - gets all pipelines and its stages.  
   
-**Result tables** : `pipelines`, `pipeline_stages`  
+**Result tables** : 
+
+- `pipelines`
+- `pipeline_stages`  
   
 ## Campaigns  
 [All Campaigns](https://developers.hubspot.com/docs/methods/email/get_campaigns_by_id)   
   
 NOTE: Fetches max 30 day period  
 
-**Result tables** : `campaigns`
+**Result tables** : 
+
+- `campaigns`
   
 ## Email Events  
 [All Email Events](https://developers.hubspot.com/docs/methods/email/get_events)  - possible to limit by `Date From` parameter.  
   
 NOTE: Fetches max 30 day period, larger periods are cut to match the limit.  
 
-**Result tables** : `email_events`
+**Result tables** : 
+
+- `email_events`
    
 ## Activities (Engagements) 
 
@@ -152,21 +177,27 @@ NOTE: Fetches max 30 day period, larger periods are cut to match the limit.
   
 NOTE: Fetches max 30 day period, larger periods are cut to match the limit.  
 
-**Result tables** : `activities`
+**Result tables** : 
+
+- `activities`
   
 ## Lists  
 [All Lists](https://developers.hubspot.com/docs/methods/lists/get_lists)   
   
 NOTE: Always fetches all available lists  
 
-**Result tables** : `lists`  
+**Result tables** : 
+
+- `lists`  
    
 ## Owners  
 [All owners](https://developers.hubspot.com/docs/methods/owners/get_owners)   
   
 NOTE: Always sets `include_inactive` to `True`  
 
-**Result tables** : `owners`
+**Result tables** : 
+
+- `owners`
 
 # Development  
   This example contains runnable container with simple unittest. For local testing it is useful to include `data` folder in the root  
