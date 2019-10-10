@@ -140,6 +140,7 @@ class HubspotClientService(HttpClientBase):
             parameters[limit_attr] = limit
 
             req = self.get_raw(self.base_url + endpoint, params=parameters)
+            req.raise_for_status()
             resp_text = str.encode(req.text, 'utf-8')
             req_response = json.loads(resp_text)
 
