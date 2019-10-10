@@ -48,16 +48,26 @@ this is set by `Date From` parameter. In most of the cases maximum of last 30 da
   
 # Supported Endpoints  
 - [Companies](#Companies)  
+**Result tables** : `companies`  
 - [Contacts](#Contacts)  
-**Result tables** : `contacts.csv`, `contacts_form_submissions.csv`, `contacts_lists.csv`  
+**Result tables** : `contacts`, `contacts_form_submissions`, `contacts_lists`, `contacts_identity_profile_identities`, `contacts_identity_profiles`  
 
 - [Deals](#Deals)  
+**Result tables** : `deals`, `deals_stage_history`, `deals_contacts_list`, `deals_assoc_deals_list`, `deals_assoc_companies_list`  
 - [Pipelines](#Pipelines)  
+**Result tables** : `pipelines`, `pipeline_stages`
+
 - [Campaigns](#Campaigns)  
+**Result tables** : `campaigns`
+
 - [Email Events](#Email Events)  
-- [Activities (Engagements)](#Engagements)  
-- [Contact Lists](#Contact Lists)  
-- [Owners](#Owners)  
+**Result tables** : `email_events`
+- [Activities (Engagements)](#Engagements)    
+**Result tables** : `activities`
+- [Lists](#Contact Lists)    
+**Result tables** : `lists`  
+- [Owners](#Owners)    
+**Result tables** : `owners`
   
 ## Companies   
   [All companies](https://developers.hubspot.com/docs/methods/companies/get-all-companies) or   
@@ -72,7 +82,8 @@ this is set by `Date From` parameter. In most of the cases maximum of last 30 da
 ```  
 
 Custom properties may be specified in configuration, names must match with api names as specified by [Company Properties](https://developers.hubspot.com/docs/methods/companies/company-properties-overview)  
-   
+
+**Result tables** : `companies`     
   
 ## Contacts      
 
@@ -94,11 +105,11 @@ Custom properties may be specified in configuration, names must match with api n
    
 ```json  
  ["company", "firstname", "lastmodifieddate", "lastname"]
- ```
+```
    
   Custom properties may be specified in configuration, names must match with api names as specified by [Contact Properties](https://developers.hubspot.com/docs/methods/contacts/contact-properties-overview)  
    
-**Result tables** : `contacts.csv`, `contacts_form_submissions.csv`, `contacts_lists.csv`  
+**Result tables** : `contacts`, `contacts_form_submissions`, `contacts_lists`, `contacts_identity_profile_identities`, `contacts_identity_profiles`  
 
 ## Deals      
  [All deals](https://developers.hubspot.com/docs/methods/deals/get-all-deals) or   
@@ -112,22 +123,26 @@ Custom properties may be specified in configuration, names must match with api n
 ```  
   Custom properties may be specified in configuration, names must match with api names as specified by [Deal Properties](https://developers.hubspot.com/docs/methods/deals/deal_properties_overview)  
    
-**Result tables** : `deals.csv`, `deals_stage_history.csv`, `deals_contacts_list.csv`  
-  
+**Result tables** : `deals`, `deals_stage_history`, `deals_contacts_list`, `deals_assoc_deals_list`, `deals_assoc_companies_list` 
+ 
 ## Pipelines  
 [All pipelines](https://developers.hubspot.com/docs/methods/pipelines/get_pipelines_for_object_type) - gets all pipelines and its stages.  
   
-**Result tables** : `pipelines.csv`, `pipeline_stages.csv`  
+**Result tables** : `pipelines`, `pipeline_stages`  
   
 ## Campaigns  
 [All Campaigns](https://developers.hubspot.com/docs/methods/email/get_campaigns_by_id)   
   
 NOTE: Fetches max 30 day period  
+
+**Result tables** : `campaigns`
   
 ## Email Events  
 [All Email Events](https://developers.hubspot.com/docs/methods/email/get_events)  - possible to limit by `Date From` parameter.  
   
 NOTE: Fetches max 30 day period, larger periods are cut to match the limit.  
+
+**Result tables** : `email_events`
    
 ## Activities (Engagements) 
 
@@ -136,16 +151,22 @@ NOTE: Fetches max 30 day period, larger periods are cut to match the limit.
  possible to limit by `Date From` parameter.  
   
 NOTE: Fetches max 30 day period, larger periods are cut to match the limit.  
+
+**Result tables** : `activities`
   
-## Contact Lists  
+## Lists  
 [All Lists](https://developers.hubspot.com/docs/methods/lists/get_lists)   
   
 NOTE: Always fetches all available lists  
+
+**Result tables** : `lists`  
    
 ## Owners  
 [All owners](https://developers.hubspot.com/docs/methods/owners/get_owners)   
   
 NOTE: Always sets `include_inactive` to `True`  
+
+**Result tables** : `owners`
 
 # Development  
   This example contains runnable container with simple unittest. For local testing it is useful to include `data` folder in the root  
@@ -160,7 +181,7 @@ If required, change local data folder path to your custom:
 Clone this repository and init the workspace with following command:  
   
 ```  
-git clone https://bitbucket.org:kds_consulting_team/kds-team.ex-hubspot.git  
+git clone https://bitbucket.org:kds_consulting_team/kds-team.ex-hubspot-crm.git  
 cd kds-team.ex-hubspot  
 docker-compose build  
 docker-compose run --rm dev  

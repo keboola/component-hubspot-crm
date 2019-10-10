@@ -56,7 +56,7 @@ CONTACT_PROFILE_IDENTITIES_COLS = ['type', 'value', 'timestamp', 'is_primary', '
 CONTACT_LISTS_COLS = ["internal-list-id", "is-member", "static-list-id", "timestamp", "vid", KEY_CONTACT_VID]
 DEAL_STAGE_HIST_COLS = ['name', 'source', 'sourceId', 'sourceVid', 'timestamp', 'value', 'dealId']
 
-APP_VERSION = '0.0.1'
+APP_VERSION = '1.0.1'
 
 
 class Component(KBCEnvHandler):
