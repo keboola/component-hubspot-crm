@@ -418,7 +418,7 @@ class Component(KBCEnvHandler):
 
         if not os.path.isfile(file_output):
             with open(file_output, 'w+', encoding='utf-8', newline='') as b:
-                data_output.to_csv(b, index=False, header=True, columns=column_headers, line_terminator="")
+                data_output.to_csv(b, index=False, header=False, columns=column_headers, line_terminator="")
             b.close()
         else:
             with open(file_output, 'a', encoding='utf-8', newline='') as b:
