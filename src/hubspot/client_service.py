@@ -152,7 +152,8 @@ class HubspotClientService(HttpClientBase):
             if default_cols and not final_df.empty:
                 # dedupe
                 default_cols = list(set(default_cols))
-                final_df = final_df.loc[:, default_cols].fillna('')
+                final_df = final_df.reindex(columns=default_cols).fillna('')
+                # final_df = final_df.loc[:, default_cols].fillna('')
             # sort cols
             final_df = final_df.reindex(sorted(final_df.columns), axis=1)
             yield final_df

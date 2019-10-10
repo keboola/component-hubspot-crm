@@ -1,0 +1,22 @@
+CHANGE LOG
+Contacts:
+PK 'canonical_vid', 'portal_id' (previously 'vid', 'portal_id')
+
+CONTACT LISTS & SUBMISSINOS
+CONTACT_ID renamed to contact_canonical_vid
+
+identity_profiles field split into table contacts_identity_profiles and contacts_identity_profile_identities
+
+DEALS
+
+CONTACT_ID renamed to contact_vid
+
+deals_stages
+removed properties_dealstage_versions
+
+
+pipelines
+removed `stages`
+
+pipeline_stages
+PIPELINE_ID to pipelineId

@@ -1,5 +1,5 @@
 https://github.com/keboola/python-docker-application/zipball/master#egg=keboola
-https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/get/0.1.0.zip#egg=kbc
+https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/get/0.2.5.zip#egg=kbc
 pytz
 python-dateutil
 pandas
