@@ -3,8 +3,7 @@ data from [HubSpot](http://www.hubspot.com/):
 
 - Companies
 - Contacts
-- Deals
-- Pipelines
+- Deals & Pipelines
 - Campaigns
 - Email Events
 - Engagements
