@@ -148,7 +148,7 @@ class HubspotClientService(HttpClientBase):
             else:
                 has_more = False
             offset = req_response[offset_resp_attr]
-            final_df = final_df.append(json_normalize(req_response[res_obj_name]))
+            final_df = final_df.append(json_normalize(req_response[res_obj_name]), sort=True)
             if default_cols and not final_df.empty:
                 # dedupe
                 default_cols = list(set(default_cols))
@@ -176,7 +176,7 @@ class HubspotClientService(HttpClientBase):
             else:
                 has_more = False
             offset = req_response[offset_attr]
-            return final_df.append(json_normalize(req_response[res_obj_name]))
+            return final_df.append(json_normalize(req_response[res_obj_name]), sort=True)
 
     def get_contacts(self, property_attributes, start_time=None, fields=None) -> Iterable:
         """
@@ -309,7 +309,7 @@ class HubspotClientService(HttpClientBase):
                 req = self.get_raw(self.base_url + CAMPAIGNS + str(row['id']))
                 req_response = req.json()
 
-                final_df = final_df.append(json_normalize(req_response))
+                final_df = final_df.append(json_normalize(req_response), sort=True)
 
             yield final_df[['counters.open', 'counters.click', 'id', 'name']]
 
@@ -360,7 +360,7 @@ class HubspotClientService(HttpClientBase):
         req = self.get_raw('https://api.hubapi.com/deals/v1/pipelines', params={'include_inactive': include_inactive})
         req_response = req.json()
 
-        final_df = final_df.append(json_normalize(req_response))
+        final_df = final_df.append(json_normalize(req_response), sort=True)
 
         return [final_df]
 
@@ -370,6 +370,6 @@ class HubspotClientService(HttpClientBase):
         req = self.get_raw('https://api.hubapi.com/owners/v2/owners/', params={'include_inactive': include_inactive})
         req_response = req.json()
 
-        final_df = final_df.append(json_normalize(req_response))
+        final_df = final_df.append(json_normalize(req_response), sort=True)
 
         return [final_df]

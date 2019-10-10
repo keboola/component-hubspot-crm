@@ -293,7 +293,7 @@ class Component(KBCEnvHandler):
 
     # DEALS
     def get_deals(self, client: HubspotClientService, start_time, fields, property_attributes):
-        logging.info('Extracting Companies from HubSpot CRM')
+        logging.info('Extracting Deals from HubSpot CRM')
         res_file_path = os.path.join(self.tables_out_path, 'deals.csv')
         res_columns = list()
         for res in client.get_deals(property_attributes, start_time, fields):
@@ -373,13 +373,12 @@ class Component(KBCEnvHandler):
 
     # PIPELINES
     def get_pipelines(self, client: HubspotClientService):
-        logging.info('Extracting Pipelines from HubSpot CRM')
         res_file_path = os.path.join(self.tables_out_path, 'pipelines.csv')
         res_columns = list()
         for res in client.get_pipelines():
-            self.output_file(res, res_file_path, res.columns)
             self._store_pipeline_stages(res)
             res.drop(['stages'], 1, inplace=True, errors='ignore')
+            self.output_file(res, res_file_path, res.columns)
             res_columns = list(res.columns.values)
 
         # store manifests
@@ -413,7 +412,7 @@ class Component(KBCEnvHandler):
         * row by row
         """
         if data_output.empty:
-            logging.info("No results for %s", file_output)
+            logging.warning("No results for %s", file_output)
             return
 
         if not os.path.isfile(file_output):
