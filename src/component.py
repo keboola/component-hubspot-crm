@@ -50,10 +50,10 @@ MANDATORY_IMAGE_PARS = []
 
 # columns
 CONTACT_FORM_SUBISSION_COLS = ["contact-associated-by", "conversion-id", "form-id", "form-type", "meta-data",
-                               "page-id", "page-url", "portal-id", "timestamp", "title", 'CONTACT_ID']
+                               "page-id", "page-url", "portal-id", "timestamp", "title", KEY_CONTACT_VID]
 CONTACT_PROFILES_COLS = ["vid", "saved-at-timestamp", KEY_CONTACT_VID, 'identity_profile_pk']
 CONTACT_PROFILE_IDENTITIES_COLS = ['type', 'value', 'timestamp', 'is_primary', 'identity_profile_pk']
-CONTACT_LISTS_COLS = ["internal-list-id", "is-member", "static-list-id", "timestamp", "vid", "CONTACT_ID"]
+CONTACT_LISTS_COLS = ["internal-list-id", "is-member", "static-list-id", "timestamp", "vid", KEY_CONTACT_VID]
 DEAL_STAGE_HIST_COLS = ['name', 'source', 'sourceId', 'sourceVid', 'timestamp', 'value', 'dealId']
 
 APP_VERSION = '0.0.1'
