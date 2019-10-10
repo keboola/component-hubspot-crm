@@ -1,0 +1,15 @@
+Ticket Name,Associated Contact,Associated Company,Pipeline,Ticket Status,Priority,Ticket Owner,Source,Issue of Interest,Issued Ticket Before?
+Free CRM,Brittany Lambert,HubSpot,Support Pipeline,New,Medium,mmitchell@hubspot.com,Phone,App,Yes
+Sales Starter,Jack Coopersmith,Dunder Mifflin,Support Pipeline,Waiting on Contact,Low,mmitchell@hubspot.com,Form,Broken icon,Yes
+Sales Pro,Sam Cloud,Nike,Support Pipeline,Waiting on Contact,Low,mmitchell@hubspot.com,Email,Import Error,No
+Sales Enterprise,Shannon Wade,Gucci,Support Pipeline,Waiting on Us,High,mmitchell@hubspot.com,Chat,Billing Issue,No
+Marketing Starter,Blake Toder,Gap,Support Pipeline,Closed,Low,mmitchell@hubspot.com,Chat,Renewal error,Yes
+,,,,,,,,,
+Default Ticket property,Default Ticket property,Default Ticket property,Default Ticket property,Default Ticket property,Default Ticket property,Default Ticket property,Default Ticket  property,Custom Property,Custom Property
+,,,,,,,,,
+Import Checklist Criteria:,,,,,,,,,
+1. Does every piece of information have it's own unique column and match the information presented in the column header?,,,,,,,,,
+"2. HubSpot defualt properties have their own values in HubSpot, do the same values appear in the columns?",,,,,,,,,
+"(You cannot edit some default HubSpot properties; for example, Lifecycle stage has specific values that must match the values in HubSpot. You can check on the values already stored in the default properties in Settings > Properties.)",,,,,,,,,
+3. Are your custom properties created in HubSpot?,,,,,,,,,
+"4. Are there blank spaces (besides those below your data), stray column headers, or loose information in your spreadsheet? If so, please remove them.",,,,,,,,,

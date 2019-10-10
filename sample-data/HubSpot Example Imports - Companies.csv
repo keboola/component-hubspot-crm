@@ -1,0 +1,16 @@
+Name,Company Domain,Phone Number,Street Address,City,State,Postal Code,Lifecycle Stage,Company Owner,Vendor Type,Product of Interest,Point of Contact
+Dunder Mifflin,dundermifflin.com,1(800) 555-5555,16 Scranton Ave,Scranton,PA,18503,Subscriber,mmitchell@hubspot.com,Investor,Paper,Michael Scott
+Luke's Cafe,lukescafe.com,1(888) 482-7768,16 Main Street,Stars Hollow,CT,16101,Lead,mmitchell@hubspot.com,Partner,CRM,Lorelai Gilmore
+Central Perk,centralperk.com,1(888) 495-3402,123 First Street,New York,NY,10001,Sales Qualified Lead,mmitchell@hubspot.com,Agency,Marketing Starter,Monica Gellar
+,,,,,,,,,,,
+Default company property,Default company property,Default company property,Default company property,Default company property,Default company property,Default company property,Default company property,Default company property,Custom Property,Custom Property,Custom Property
+,,,,,,,,,,,
+Please note:,,,,,,,,,,,
+"Point of Contact is a custom property because contact records cannot be create directly from company records. If you want to create associated contact records, you'll need to do a separate import.",,,,,,,,,,,
+,,,,,,,,,,,
+Your Import Checklist Criteria:,,,,,,,,,,,
+1. Does every piece of information have its own unique column?,,,,,,,,,,,
+"2. HubSpot default properties have their own values in HubSpot, do the same values appear in the columns?",,,,,,,,,,,
+"(You cannot edit some default HubSpot properties; for example, Lifecycle stage has specific values that must match the values in HubSpot. You can check on the values already stored in the default properties in Settings > Properties.)",,,,,,,,,,,
+3. Are your custom properties created in HubSpot?,,,,,,,,,,,
+"4. Are there blank spaces (besides those below your data), stray column headers, or loose information in your spreadsheet? If so, please remove them.",,,,,,,,,,,

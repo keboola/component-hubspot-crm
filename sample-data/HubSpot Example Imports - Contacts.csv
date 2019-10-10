@@ -1,0 +1,16 @@
+First Name,Last Name,Email Address,Phone Number,Street Address,City,State,Postal Code,Lifecycle Stage,Contact Owner,Favorite Ice Cream Flavor,Product of Interest
+Michael,Scott,michael.scott@dundermifflin.com,1(800) 555-5555,16 Scranton Ave,Scranton,PA,18503,Subscriber,mmitchell@hubspot.com,Vanilla,Paper
+Mac,Mitchell,macmitch@hubspot.com,1(888) 482-7768,25 First Street,Cambridge,MA,21430,Lead,mmitchell@hubspot.com,Rocky Road,CRM
+Lauren,Tzirides,ltziri@hubspot.com,1(888) 482-7768,25 First Street,Cambridge,MA,21430,Sales Qualified Lead,mmitchell@hubspot.com,Coffee,Marketing Starter
+,,,,,,,,,,,
+Default contact property,Default contact property,Default contact property,Default contact or company property,Default contact or company property,Default contact or company property,Default contact or company property,Default contact or company property,Default contact or company property,Default contact property,Custom Property,Custom Property
+,,,,,,,,,,,
+Please note:,,,,,,,,,,,
+There is a mix of contact and company properties in this spreadsheet. We recommend that you prepare two separate files for contact and company information. You will then have the option to associate two record types during the import.,,,,,,,,,,,
+,,,,,,,,,,,
+Your Import Checklist Criteria:,,,,,,,,,,,
+1. Does every piece of information have its own unique column?,,,,,,,,,,,
+"2. HubSpot default properties have their own values that can be accessed within the Properties tool, do the same values appear in the columns?",,,,,,,,,,,
+"(You cannot edit some default HubSpot properties; for example, Lifecycle stage has specific values that must match the values in HubSpot. You can check on the values already stored in the default properties in Settings > Properties.)",,,,,,,,,,,
+3. Are your custom properties created in HubSpot?,,,,,,,,,,,
+"4. Are there blank spaces (besides those below your data), stray column headers, or loose information in your spreadsheet? If so, please remove them.",,,,,,,,,,,

@@ -244,11 +244,11 @@ class Component(KBCEnvHandler):
 
         if os.path.isfile(c_subform_path):
             self.configuration.write_table_manifest(file_name=c_subform_path, primary_key=C_SUBMISSION_PK,
-                                                    columns=C_SUBMISSION_PK,
+                                                    columns=CONTACT_FORM_SUBISSION_COLS,
                                                     incremental=True)
         if os.path.isfile(c_lists_path):
             self.configuration.write_table_manifest(file_name=c_lists_path, primary_key=CONTACT_LIST_PK,
-                                                    columns=CONTACT_LIST_PK,
+                                                    columns=CONTACT_LISTS_COLS,
                                                     incremental=True)
 
     def _store_contact_identity_profiles(self, contacts):
@@ -293,7 +293,6 @@ class Component(KBCEnvHandler):
 
     # DEALS
     def get_deals(self, client: HubspotClientService, start_time, fields, property_attributes):
-        logging.info('Extracting Deals from HubSpot CRM')
         res_file_path = os.path.join(self.tables_out_path, 'deals.csv')
         res_columns = list()
         for res in client.get_deals(property_attributes, start_time, fields):
