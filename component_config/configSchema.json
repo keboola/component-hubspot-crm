@@ -57,7 +57,7 @@
     "property_attributes": {
       "type": "object",
       "title": "Property additional attributes",
-      "description": "Add additional attributes to each custom property. <font color=\\\"#e06666\\\"><b>NOTE</b>: Applicable for Contacts, Companies and Deals. </font>\"",
+      "description": "Add additional attributes to each custom property. <font color=\"#e06666\"><b>NOTE</b>: Applicable for Contacts, Companies and Deals. </font>",
       "options": {
         "expand_height": true
       },
@@ -97,7 +97,7 @@
       "options": {
         "input_height": "100px"
       },
-      "description": "Comma separated list of Deal properties to fetch. The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched. <font color=\\\"#e06666\\\"><b>NOTE</b>: applies only if the endpoint is selected.</font>\"",
+      "description": "Comma separated list of Deal properties to fetch. The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched. <font color=\"#e06666\"><b>NOTE</b>: applies only if the endpoint is selected.</font>",
       "uniqueItems": true,
       "propertyOrder": 700
     },
@@ -109,7 +109,7 @@
       "options": {
         "input_height": "100px"
       },
-      "description": "Comma separated list of Company properties to fetch. The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched. <font color=\\\"#e06666\\\"><b>NOTE</b>: applies only if the endpoint is selected.</font>\"",
+      "description": "Comma separated list of Company properties to fetch. The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched. <font color=\"#e06666\"><b>NOTE</b>: applies only if the endpoint is selected.</font>",
       "uniqueItems": true,
       "propertyOrder": 500
     },
