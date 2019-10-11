@@ -6,9 +6,9 @@ Template Component main class.
 import logging
 import os
 import sys
+from datetime import datetime
 
 import pandas as pd
-from datetime import datetime
 from kbc.env_handler import KBCEnvHandler
 
 from hubspot.client_service import HubspotClientService
@@ -35,6 +35,7 @@ COMPANY_ID_COL = ['companyId']
 KEY_API_TOKEN = '#api_token'
 KEY_PERIOD_FROM = 'period_from'
 KEY_ENDPOINTS = 'endpoints'
+KEY_INCR_OUT = 'incremental_output'
 KEY_COMPANY_PROPERTIES = 'company_properties'
 KEY_CONTACT_PROPERTIES = 'contact_properties'
 KEY_DEAL_PROPERTIES = 'deal_properties'
@@ -83,6 +84,8 @@ class Component(KBCEnvHandler):
         except ValueError as e:
             logging.exception(e)
             exit(1)
+
+        self.incremental = self.cfg_params.get(KEY_INCR_OUT)
 
     def run(self):
         '''
@@ -158,39 +161,15 @@ class Component(KBCEnvHandler):
         """
         res_columns = list()
         for res in ds_getter(*fpars):
-            # res['pk'] = self._build_surrogate_key(pkey,res)
             self.output_file(res, res_file_path, res.columns)
             res_columns = list(res.columns.values)
 
         # store manifest
         if os.path.isfile(res_file_path):
             cleaned_columns = self._cleanup_col_names(res_columns)
-            self.configuration.write_table_manifest(file_name=res_file_path, primary_key=pkey, incremental=True,
+            self.configuration.write_table_manifest(file_name=res_file_path, primary_key=pkey,
+                                                    incremental=self.incremental,
                                                     columns=cleaned_columns)
-
-    # def _build_surrogate_key(self, pkey, res_frame):
-    #     res_frame['pk'] = ''
-    #     for key in pkey:
-    #         res_frame['pk'] = res_frame['pk'] + res_frame[key].map(str)
-    #     return res_frame['pk']
-
-    # def _get_property_versions(self, res, parent_path, parent_pkey):
-    #     prop_versions_path = parent_path.replace('.csv','_property_versions.csv')
-    #     all_cols_names = list(res.columns.values)
-    #     version_cols = fnmatch.filter(all_cols_names, 'properties.*.versions')
-    #     versions_df = res[version_cols + ['pk']]
-    #     for col in version_cols:
-    #         res = versions_df[[col, 'pk']].copy()
-    #         res['property_name'] = col.replace('properties.', '', 1).replace('.versions', '', 1)
-    #         res.rename(columns={'pk':'parent_pk'}, inplace=True)
-    #         self.output_file(res, prop_versions_path, res.columns)
-    #         res_columns = list(res.columns.values)
-    #
-    #
-    #     if os.path.isfile(prop_versions_path):
-    #         cleaned_columns = self._cleanup_col_names(res_columns, res_file_path)
-    #         self.configuration.write_table_manifest(file_name=res_file_path, primary_key=pkey, incremental=True,
-    #                                                 columns=cleaned_columns)
 
     # CONTACTS
     def get_contacts(self, client: HubspotClientService, start_time, fields, property_attributes):
@@ -215,7 +194,8 @@ class Component(KBCEnvHandler):
         # store manifests
         if os.path.isfile(res_file_path):
             cl_cols = self._cleanup_col_names(res_columns)
-            self.configuration.write_table_manifest(file_name=res_file_path, primary_key=CONTACT_PK, incremental=True,
+            self.configuration.write_table_manifest(file_name=res_file_path, primary_key=CONTACT_PK,
+                                                    incremental=self.incremental,
                                                     columns=cl_cols)
 
     def _store_contact_submission_and_list(self, contacts):
@@ -245,11 +225,11 @@ class Component(KBCEnvHandler):
         if os.path.isfile(c_subform_path):
             self.configuration.write_table_manifest(file_name=c_subform_path, primary_key=C_SUBMISSION_PK,
                                                     columns=CONTACT_FORM_SUBISSION_COLS,
-                                                    incremental=True)
+                                                    incremental=self.incremental)
         if os.path.isfile(c_lists_path):
             self.configuration.write_table_manifest(file_name=c_lists_path, primary_key=CONTACT_LIST_PK,
                                                     columns=CONTACT_LISTS_COLS,
-                                                    incremental=True)
+                                                    incremental=self.incremental)
 
     def _store_contact_identity_profiles(self, contacts):
         c_profiles = os.path.join(self.tables_out_path, 'contacts_identity_profiles.csv')
@@ -278,12 +258,12 @@ class Component(KBCEnvHandler):
         if os.path.isfile(c_profiles):
             self.configuration.write_table_manifest(file_name=c_profiles, primary_key=['identity_profile_pk'],
                                                     columns=CONTACT_PROFILES_COLS,
-                                                    incremental=True)
+                                                    incremental=self.incremental)
         if os.path.isfile(c_identities):
             self.configuration.write_table_manifest(file_name=c_identities,
                                                     primary_key=['identity_profile_pk', 'type', 'value'],
                                                     columns=CONTACT_PROFILE_IDENTITIES_COLS,
-                                                    incremental=True)
+                                                    incremental=self.incremental)
 
     def _store_identities(self, identities, res_file, identity_profile_pk):
         for index, row in identities.iteritems():
@@ -308,7 +288,8 @@ class Component(KBCEnvHandler):
         # store manifests
         if os.path.isfile(res_file_path):
             cl_cols = self._cleanup_col_names(res_columns)
-            self.configuration.write_table_manifest(file_name=res_file_path, primary_key=DEAL_PK, incremental=True,
+            self.configuration.write_table_manifest(file_name=res_file_path, primary_key=DEAL_PK,
+                                                    incremental=self.incremental,
                                                     columns=cl_cols)
 
     def _store_deals_stage_hist_and_list(self, deals):
@@ -355,20 +336,20 @@ class Component(KBCEnvHandler):
         if os.path.isfile(stage_hist_path):
             self.configuration.write_table_manifest(file_name=stage_hist_path, primary_key=DEAL_STAGE_HIST_PK,
                                                     columns=stage_his_cols,
-                                                    incremental=True)
+                                                    incremental=self.incremental)
         if os.path.isfile(c_lists_path):
             self.configuration.write_table_manifest(file_name=c_lists_path, primary_key=DEAL_C_LIST_PK,
                                                     columns=c_list_cols,
-                                                    incremental=True)
+                                                    incremental=self.incremental)
         if os.path.isfile(deal_lists_path):
             self.configuration.write_table_manifest(file_name=c_lists_path, primary_key=['dealId', 'associated_dealId'],
                                                     columns=ass_deal_list_cols,
-                                                    incremental=True)
+                                                    incremental=self.incremental)
         if os.path.isfile(companies_lists_path):
             self.configuration.write_table_manifest(file_name=companies_lists_path,
                                                     primary_key=['dealId', 'associated_companyId'],
                                                     columns=comp_list_cols,
-                                                    incremental=True)
+                                                    incremental=self.incremental)
 
     # PIPELINES
     def get_pipelines(self, client: HubspotClientService):
@@ -384,7 +365,7 @@ class Component(KBCEnvHandler):
         if os.path.isfile(res_file_path):
             cl_cols = self._cleanup_col_names(res_columns)
             self.configuration.write_table_manifest(file_name=res_file_path, primary_key=PIPELINE_PK, columns=cl_cols,
-                                                    incremental=True)
+                                                    incremental=self.incremental)
 
     def _store_pipeline_stages(self, pipelines):
 
@@ -402,7 +383,7 @@ class Component(KBCEnvHandler):
         if os.path.isfile(stage_hist_path):
             self.configuration.write_table_manifest(file_name=stage_hist_path, primary_key=PIPELINE_STAGE_PK,
                                                     columns=res_columns,
-                                                    incremental=True)
+                                                    incremental=self.incremental)
 
     def output_file(self, data_output, file_output, column_headers):
         """
