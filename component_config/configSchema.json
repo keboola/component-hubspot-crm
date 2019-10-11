@@ -8,7 +8,8 @@
     "company_properties",
     "contact_properties",
     "deal_properties",
-    "property_attributes"
+    "property_attributes",
+    "incremental_output"
   ],
   "properties": {
     "endpoints": {
@@ -54,6 +55,13 @@
       "description": "Date in YYYY-MM-DD format or dateparser string i.e. 5 days ago, 1 month ago, yesterday, etc. If left empty, all records are downloaded.",
       "propertyOrder": 300
     },
+    "incremental_output": {
+          "type": "boolean",
+          "title": "Incremental output",
+          "description": "If set to true, the result tables will be updated based on primary key. <font color=\"#e06666\"><b>NOTE</b>: If you wish to remove deleted records, this needs to be set to false and the <i>Period from</i> attribute empty. </font>",
+      "propertyOrder": 365,
+          "default": true
+        },
     "property_attributes": {
       "type": "object",
       "title": "Property additional attributes",

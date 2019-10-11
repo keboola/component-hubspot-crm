@@ -32,6 +32,17 @@ List of endpoints to download. Currently supported are:
 
 For more info see the **Supported endpoints** section
 
+### Incremental output
+
+Set this parameter to `true` if you wish to output data incrementally - i.e. to upsert new data to the result table based on the primary key.
+
+#### **Deleted records** 
+
+It is important to mention that HubSpot API **does not** return deleted records. That means that even though some tables like `deals` will 
+contain `isDeleted` field, it's value will be always `False`. To keep track of deleted records you need to:
+- set Incremental Output to False
+- remove any value in `Period from date` parameter to retrieve the full history of reccords.
+
 ### **Additional Property attributes**
 Additional attributes that are fetched for each specified property. Applies only for `companies`,`contacts` and `deals` endpoint, for which it is possible to define a list of additional properties.
 
