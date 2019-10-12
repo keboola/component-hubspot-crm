@@ -6,9 +6,9 @@ Template Component main class.
 import logging
 import os
 import sys
-from datetime import datetime
 
 import pandas as pd
+from datetime import datetime
 from kbc.env_handler import KBCEnvHandler
 
 from hubspot.client_service import HubspotClientService
@@ -81,8 +81,8 @@ class Component(KBCEnvHandler):
         try:
             self.validate_config(MANDATORY_PARS)
             self.validate_image_parameters(MANDATORY_IMAGE_PARS)
-        except ValueError as e:
-            logging.exception(e)
+        except ValueError as ex:
+            logging.exception(ex)
             exit(1)
 
         self.incremental = self.cfg_params.get(KEY_INCR_OUT)
@@ -96,7 +96,11 @@ class Component(KBCEnvHandler):
         client_service = HubspotClientService(token)
 
         if params.get(KEY_PERIOD_FROM):
-            start_date, end_date = self.get_date_period_converted(params.get(KEY_PERIOD_FROM),
+            import dateparser
+            period = params.get(KEY_PERIOD_FROM)
+            if not dateparser.parse(period):
+                raise ValueError(F'Invalid date from period "{period}", check the supported format')
+            start_date, end_date = self.get_date_period_converted(period,
                                                                   datetime.utcnow().strftime('%Y-%m-%d'))
             recent = True
         else:
@@ -428,6 +432,9 @@ if __name__ == "__main__":
     try:
         comp = Component(debug_arg)
         comp.run()
+    except KeyError as e:
+        logging.exception(Exception(F'Invalid Key value:{e}'))
+        exit(2)
     except Exception as e:
         logging.exception(e)
         exit(1)

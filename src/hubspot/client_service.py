@@ -140,7 +140,7 @@ class HubspotClientService(HttpClientBase):
             parameters[limit_attr] = limit
 
             req = self.get_raw(self.base_url + endpoint, params=parameters)
-            req.raise_for_status()
+            self._check_http_result(req, endpoint)
             resp_text = str.encode(req.text, 'utf-8')
             req_response = json.loads(resp_text)
 
@@ -170,15 +170,41 @@ class HubspotClientService(HttpClientBase):
             parameters[limit_attr] = limit
 
             req = self.get_raw(self.base_url + endpoint, params=parameters)
+            self._check_http_result(req, endpoint)
             resp_text = str.encode(req.text, 'utf-8')
             req_response = json.loads(resp_text)
 
             if req_response[has_more_attr]:
                 has_more = True
+                offset = req_response[offset_attr]
             else:
                 has_more = False
-            offset = req_response[offset_attr]
+
             return final_df.append(json_normalize(req_response[res_obj_name]), sort=True)
+
+    def _check_http_result(self, response, endpoint):
+        http_error_msg = ''
+        if isinstance(response.reason, bytes):
+            # We attempt to decode utf-8 first because some servers
+            # choose to localize their reason strings. If the string
+            # isn't utf-8, we fall back to iso-8859-1 for all other
+            # encodings. (See PR #3538)
+            try:
+                reason = response.reason.decode('utf-8')
+            except UnicodeDecodeError:
+                reason = response.reason.decode('iso-8859-1')
+        else:
+            reason = response.reason
+        if 401 == response.status_code:
+            http_error_msg = u'Failed to login: %s - Please check your API token' % (reason)
+        elif 401 < response.status_code < 500:
+            http_error_msg = u'Request to %s failed %s Client Error: %s' % (endpoint, response.status_code, reason)
+
+        elif 500 <= response.status_code < 600:
+            http_error_msg = u'Request to %s failed %s Client Error: %s' % (endpoint, response.status_code, reason)
+
+        if http_error_msg:
+            raise RuntimeError(http_error_msg)
 
     def get_contacts(self, property_attributes, start_time=None, fields=None) -> Iterable:
         """
@@ -237,6 +263,7 @@ class HubspotClientService(HttpClientBase):
 
     def get_company_properties(self):
         req = self.get_raw(self.base_url + COMPANY_PROPERTIES)
+        self._check_http_result(req, COMPANY_PROPERTIES)
         req_response = req.json()
         return req_response
 
@@ -309,6 +336,7 @@ class HubspotClientService(HttpClientBase):
 
             for index, row in res.iterrows():
                 req = self.get_raw(self.base_url + CAMPAIGNS + str(row['id']))
+                self._check_http_result(req, CAMPAIGNS)
                 req_response = req.json()
 
                 final_df = final_df.append(json_normalize(req_response), sort=True)
@@ -360,6 +388,7 @@ class HubspotClientService(HttpClientBase):
         final_df = pd.DataFrame()
 
         req = self.get_raw('https://api.hubapi.com/deals/v1/pipelines', params={'include_inactive': include_inactive})
+        self._check_http_result(req, 'deals/pipelines')
         req_response = req.json()
 
         final_df = final_df.append(json_normalize(req_response), sort=True)
@@ -370,6 +399,7 @@ class HubspotClientService(HttpClientBase):
         final_df = pd.DataFrame()
 
         req = self.get_raw('https://api.hubapi.com/owners/v2/owners/', params={'include_inactive': include_inactive})
+        self._check_http_result(req, 'owners')
         req_response = req.json()
 
         final_df = final_df.append(json_normalize(req_response), sort=True)
