@@ -146,9 +146,10 @@ class HubspotClientService(HttpClientBase):
 
             if req_response[has_more_attr]:
                 has_more = True
+                offset = req_response[offset_resp_attr]
             else:
                 has_more = False
-            offset = req_response[offset_resp_attr]
+
             final_df = final_df.append(json_normalize(req_response[res_obj_name]), sort=True)
             if default_cols and not final_df.empty:
                 # dedupe
@@ -312,7 +313,7 @@ class HubspotClientService(HttpClientBase):
 
                 final_df = final_df.append(json_normalize(req_response), sort=True)
 
-            yield final_df[['counters.open', 'counters.click', 'id', 'name']]
+            yield final_df if final_df.empty else final_df[['counters.open', 'counters.click', 'id', 'name']]
 
     def get_email_events(self, start_date: datetime) -> Iterable:
         offset = ''
