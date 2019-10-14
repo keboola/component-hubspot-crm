@@ -13,8 +13,6 @@ from kbc.env_handler import KBCEnvHandler
 
 from hubspot.client_service import HubspotClientService
 
-IDENTITIES_COLS = ["type", "value", "timestamp", "is-primary", "identity_profile_pk"]
-
 KEY_CONTACT_VID = 'contact_canonical_vid'
 
 # primary keys
@@ -55,7 +53,7 @@ MANDATORY_IMAGE_PARS = []
 CONTACT_FORM_SUBISSION_COLS = ["contact-associated-by", "conversion-id", "form-id", "form-type", "meta-data",
                                "page-id", "page-url", "portal-id", "timestamp", "title", KEY_CONTACT_VID]
 CONTACT_PROFILES_COLS = ["vid", "saved-at-timestamp", KEY_CONTACT_VID, 'identity_profile_pk']
-CONTACT_PROFILE_IDENTITIES_COLS = ['type', 'value', 'timestamp', 'is_primary', 'identity_profile_pk']
+CONTACT_PROFILE_IDENTITIES_COLS = ['type', 'value', 'timestamp', 'is-primary', 'identity_profile_pk']
 CONTACT_LISTS_COLS = ["internal-list-id", "is-member", "static-list-id", "timestamp", "vid", KEY_CONTACT_VID]
 DEAL_STAGE_HIST_COLS = ['name', 'source', 'sourceId', 'sourceVid', 'timestamp', 'value', 'dealId']
 
@@ -275,7 +273,7 @@ class Component(KBCEnvHandler):
         for index, row in identities.iteritems():
             tmp_identities = pd.DataFrame(row).copy()
             tmp_identities['identity_profile_pk'] = identity_profile_pk
-            tmp_identities.reindex(columns=CONTACT_PROFILE_IDENTITIES_COLS)
+            tmp_identities = tmp_identities.reindex(columns=CONTACT_PROFILE_IDENTITIES_COLS)
             self.output_file(tmp_identities, res_file, tmp_identities.columns)
 
     # DEALS
