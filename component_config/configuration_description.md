@@ -1,1 +1,0 @@
-Additional documentation is available [here](https://bitbucket.org/kds_consulting_team/kds-team.ex-hubspot/src/master/README.md)

@@ -14,6 +14,7 @@
   "properties": {
     "endpoints": {
       "type": "array",
+      "title": "Endpoints",
       "items": {
         "enum": [
           "companies",
@@ -56,16 +57,26 @@
       "propertyOrder": 300
     },
     "incremental_output": {
-          "type": "boolean",
-          "title": "Incremental output",
-          "description": "If set to true, the result tables will be updated based on primary key. <font color=\"#e06666\"><b>NOTE</b>: If you wish to remove deleted records, this needs to be set to false and the <i>Period from</i> attribute empty. </font>",
-      "propertyOrder": 365,
-          "default": true
-        },
+      "type": "number",
+      "enum": [
+        0,
+        1
+      ],
+      "options": {
+        "enum_titles": [
+          "No",
+          "Yes"
+        ]
+      },
+      "default": 1,
+      "title": "Incremental output",
+      "description": "If set to true, the result tables will be updated based on primary key. NOTE: If you wish to remove deleted records, this needs to be set to false and the Period from attribute empty.",
+      "propertyOrder": 365
+    },
     "property_attributes": {
       "type": "object",
       "title": "Property additional attributes",
-      "description": "Add additional attributes to each custom property. <font color=\"#e06666\"><b>NOTE</b>: Applicable for Contacts, Companies and Deals. </font>",
+      "description": "Add additional attributes to each custom property. NOTE: Applicable for Contacts, Companies and Deals.",
       "options": {
         "expand_height": true
       },
@@ -78,58 +89,88 @@
       "format": "grid",
       "properties": {
         "include_versions": {
-          "type": "boolean",
+          "type": "number",
+          "enum": [
+            0,
+            1
+          ],
+          "options": {
+            "enum_titles": [
+              "No",
+              "Yes"
+            ]
+          },
+          "default": 0,
           "title": "Include attribute versions",
-          "description": "A list of previous versions of the property. The first item in the list will be the current version",
-          "default": true
+          "description": "A list of previous versions of the property. The first item in the list will be the current version"
         },
         "include_source": {
-          "type": "boolean",
+          "type": "number",
+          "enum": [
+            0,
+            1
+          ],
+          "options": {
+            "enum_titles": [
+              "No",
+              "Yes"
+            ]
+          },
+          "default": 0,
           "title": "Include source attribute",
-          "description": "The method by which this version was set.",
-          "default": true
+          "description": "The method by which this version was set."
         },
         "include_timestamp": {
-          "type": "boolean",
-          "title": "Include timestamp attribute?",
-          "description": "A Unix timestamp (in milliseconds) of the time when this version was set",
-          "default": true
+          "type": "number",
+          "enum": [
+            0,
+            1
+          ],
+          "options": {
+            "enum_titles": [
+              "No",
+              "Yes"
+            ]
+          },
+          "default": 0,
+          "title": "Include timestamp attribute",
+          "description": "A Unix timestamp (in milliseconds) of the time when this version was set"
         }
       }
     },
     "deal_properties": {
       "type": "string",
-      "title": "Deal additional properties",
+      "title": "Deal additional properties (if selected)",
       "format": "textarea",
       "default": "authority, budget, campaign_source, hs_analytics_source, hs_campaign, hs_lastmodifieddate, need, timeframe, dealname, amount, closedate, pipeline, createdate, engagements_last_meeting_booked, dealtype, hs_createdate, description, start_date, closed_lost_reason, closed_won_reason, end_date, lead_owner, tech_owner, service_amount, contract_type, hubspot_owner_id, partner_name, notes_last_updated",
       "options": {
         "input_height": "100px"
       },
-      "description": "Comma separated list of Deal properties to fetch. The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched. <font color=\"#e06666\"><b>NOTE</b>: applies only if the endpoint is selected.</font>",
+      "description": "Comma separated list of Deal properties. The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched.",
       "uniqueItems": true,
       "propertyOrder": 700
     },
     "company_properties": {
       "type": "string",
-      "title": "Company additional properties",
+      "title": "Company additional properties (if selected)",
       "format": "textarea",
       "default": "about_us, name, phone, facebook_company_page, city, country, website, industry, annualrevenue, linkedin_company_page, hs_lastmodifieddate, hubspot_owner_id, notes_last_updated, description, createdate, numberofemployees, hs_lead_status, founded_year, twitterhandle, linkedinbio",
       "options": {
         "input_height": "100px"
       },
-      "description": "Comma separated list of Company properties to fetch. The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched. <font color=\"#e06666\"><b>NOTE</b>: applies only if the endpoint is selected.</font>",
+      "description": "Comma separated list of Company properties. The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched.",
       "uniqueItems": true,
       "propertyOrder": 500
     },
     "contact_properties": {
       "type": "string",
-      "title": "Contact properties",
+      "title": "Contact additional properties (if selected)",
       "format": "textarea",
       "default": "hs_facebookid, hs_linkedinid, ip_city, ip_country, ip_country_code, newsletter_opt_in, firstname, linkedin_profile, lastname, email, mobilephone, phone, city, country, region, jobtitle, company, website, numemployees, industry, associatedcompanyid, hs_lead_status, lastmodifieddate, source, hs_email_optout, twitterhandle, lead_type, hubspot_owner_id, notes_last_updated, hs_analytics_source, opt_in, createdate, hs_twitterid, lifecyclestage",
       "options": {
         "input_height": "100px"
       },
-      "description": "Comma separated list of contact properties to fetch. e.g. `'firstname', 'lastname'` The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched. <font color=\"#e06666\"><b>NOTE</b>: applies only if the endpoint is selected.</font>",
+      "description": "Comma separated list of contact properties. The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched.",
       "uniqueItems": true,
       "propertyOrder": 600
     }
