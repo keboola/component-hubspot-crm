@@ -6,12 +6,14 @@ Template Component main class.
 import logging
 import os
 import sys
+from datetime import datetime
 
 import pandas as pd
-from datetime import datetime
 from kbc.env_handler import KBCEnvHandler
 
 from hubspot.client_service import HubspotClientService
+
+IDENTITIES_COLS = ["type", "value", "timestamp", "is-primary", "identity_profile_pk"]
 
 KEY_CONTACT_VID = 'contact_canonical_vid'
 
@@ -271,8 +273,9 @@ class Component(KBCEnvHandler):
 
     def _store_identities(self, identities, res_file, identity_profile_pk):
         for index, row in identities.iteritems():
-            tmp_identities = pd.DataFrame(row)
+            tmp_identities = pd.DataFrame(row).copy()
             tmp_identities['identity_profile_pk'] = identity_profile_pk
+            tmp_identities.reindex(columns=CONTACT_PROFILE_IDENTITIES_COLS)
             self.output_file(tmp_identities, res_file, tmp_identities.columns)
 
     # DEALS
