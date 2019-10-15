@@ -65,7 +65,7 @@
       "options": {
         "enum_titles": [
           "Full Load",
-          "Incremental update"
+          "Incremental Update"
         ]
       },
       "default": 1,
