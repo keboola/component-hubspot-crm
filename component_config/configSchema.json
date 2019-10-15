@@ -64,13 +64,13 @@
       ],
       "options": {
         "enum_titles": [
-          "No",
-          "Yes"
+          "Full Load",
+          "Incremental update"
         ]
       },
       "default": 1,
-      "title": "Incremental output",
-      "description": "If set to true, the result tables will be updated based on primary key. NOTE: If you wish to remove deleted records, this needs to be set to false and the Period from attribute empty.",
+      "title": "Load type",
+      "description": "If set to Incremental update, the result tables will be updated based on primary key. Full load overwrites the destination table each time. NOTE: If you wish to remove deleted records, this needs to be set to Full load and the Period from attribute empty.",
       "propertyOrder": 365
     },
     "property_attributes": {
