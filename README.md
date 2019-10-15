@@ -56,14 +56,19 @@ Additional attributes that are fetched for each specified property. Applies only
 - **Contact properties** -[OPT]  Additional list of properties, names must match with api names as specified by [Deal Properties](https://developers.hubspot.com/docs/methods/deals/deal_properties_overview)  The endpoint must be listed in `endpoints` parameter for this to take effect. 
 - **Deal properties** - [OPT] Additional list of properties, names must match with api names as specified by [Deal Properties](https://developers.hubspot.com/docs/methods/deals/deal_properties_overview)  The endpoint must be listed in `endpoints` parameter for this to take effect. 
 
-#### How to find internal name of a property 
+#### How to find internal name of a property
 
 - In the UI navigate to Contacts, Deals or Companies
 - In the top right corner choose `Actions` -> `Edit properties`
+
 ![Edit properties](docs/imgs/edit_properties.png)
+
 - Hover over required property and click `Edit`
+
 ![Edit property](docs/imgs/edit_property.png)
+
 - Look for `Internal name`, this is what you need to include in the `Additional properties field`
+
 ![Internal name](docs/imgs/internal_name.png)
  
 # Functionality  
