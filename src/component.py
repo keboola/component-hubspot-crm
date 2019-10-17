@@ -328,14 +328,14 @@ class Component(KBCEnvHandler):
                 comp_list = pd.DataFrame(row['associations.associatedCompanyIds'],
                                          columns=['associated_companyId'])
                 comp_list['dealId'] = row['dealId']
-                self.output_file(comp_list, c_lists_path, comp_list.columns)
+                self.output_file(comp_list, companies_lists_path, comp_list.columns)
                 comp_list_cols = list(comp_list.columns.values)
 
             if row.get('associations.associatedDealIds') and len(row['associations.associatedDealIds']) != '[]':
                 ass_deal_list = pd.DataFrame(row['associations.associatedDealIds'],
                                              columns=['associated_dealId'])
                 ass_deal_list['dealId'] = row['dealId']
-                self.output_file(ass_deal_list, c_lists_path, ass_deal_list.columns)
+                self.output_file(ass_deal_list, deal_lists_path, ass_deal_list.columns)
                 ass_deal_list_cols = list(ass_deal_list.columns.values)
 
         if os.path.isfile(stage_hist_path):
