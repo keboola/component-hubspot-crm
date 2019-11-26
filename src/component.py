@@ -347,7 +347,7 @@ class Component(KBCEnvHandler):
                                                     columns=c_list_cols,
                                                     incremental=self.incremental)
         if os.path.isfile(deal_lists_path):
-            self.configuration.write_table_manifest(file_name=c_lists_path, primary_key=['dealId', 'associated_dealId'],
+            self.configuration.write_table_manifest(file_name=deal_lists_path, primary_key=['dealId', 'associated_dealId'],
                                                     columns=ass_deal_list_cols,
                                                     incremental=self.incremental)
         if os.path.isfile(companies_lists_path):
