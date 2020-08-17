@@ -173,7 +173,7 @@ class Component(KBCEnvHandler):
             cleaned_columns = self._cleanup_col_names(res_columns)
             self.configuration.write_table_manifest(file_name=res_file_path, primary_key=pkey,
                                                     incremental=self.incremental,
-                                                    columns=cleaned_columns, destination='TESTEST')
+                                                    columns=cleaned_columns, destination='in.c-test.destination')
 
     # CONTACTS
     def get_contacts(self, client: HubspotClientService, start_time, fields, property_attributes):
