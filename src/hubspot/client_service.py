@@ -345,7 +345,7 @@ class HubspotClientService(HttpClientBase):
             # add missing cols
             columns = ['counters.open', 'counters.click', 'id', 'name', 'counters.delivered',
                        'counters.processed', 'counters.sent', 'lastProcessingFinishedAt',
-                       'lastProcessingStartedAt', 'lastProcessingStateChangeAt', 'name',
+                       'lastProcessingStartedAt', 'lastProcessingStateChangeAt',
                        'numIncluded', 'processingState', 'subject', 'type', 'appId', 'appName', 'contentId', ]
 
             if not final_df.empty:
