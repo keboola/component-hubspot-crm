@@ -7,7 +7,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 from kbc.client_base import HttpClientBase
-from pandas.io.json import json_normalize
+from pandas import json_normalize
 
 COMPANIES_DEFAULT_COLS = ["additionalDomains", "companyId", "isDeleted", "mergeAudits", "portalId", "stateChanges"]
 COMPANY_DEFAULT_PROPERTIES = ['about_us', 'name', 'phone', 'facebook_company_page', 'city', 'country', 'website',
