@@ -4,6 +4,7 @@ from _datetime import timedelta
 from collections.abc import Iterable
 from datetime import datetime
 
+import numpy as np
 import pandas as pd
 from kbc.client_base import HttpClientBase
 from pandas.io.json import json_normalize
@@ -341,8 +342,22 @@ class HubspotClientService(HttpClientBase):
                 req_response = req.json()
 
                 final_df = final_df.append(json_normalize(req_response), sort=True)
+            # add missing cols
+            columns = ['counters.open', 'counters.click', 'id', 'name', 'counters.delivered',
+                       'counters.processed', 'counters.sent', 'lastProcessingFinishedAt',
+                       'lastProcessingStartedAt', 'lastProcessingStateChangeAt', 'name',
+                       'numIncluded', 'processingState', 'subject', 'type', 'appId', 'appName', 'contentId', ]
 
-            yield final_df if final_df.empty else final_df[['counters.open', 'counters.click', 'id', 'name']]
+            if not final_df.empty:
+                for c in columns:
+                    if c not in final_df:
+                        final_df[c] = np.nan
+
+            yield final_df if final_df.empty else final_df[
+                ['counters.open', 'counters.click', 'id', 'name', 'counters.delivered',
+                 'counters.processed', 'counters.sent', 'lastProcessingFinishedAt',
+                 'lastProcessingStartedAt', 'lastProcessingStateChangeAt', 'name',
+                 'numIncluded', 'processingState', 'subject', 'type', 'appId', 'appName', 'contentId', ]]
 
     def get_email_events(self, start_date: datetime, events_list: list) -> Iterable:
         offset = ''

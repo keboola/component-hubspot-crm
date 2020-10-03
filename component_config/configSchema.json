@@ -25,6 +25,7 @@
           "contacts",
           "deals",
           "pipelines",
+          "email_events",
           "email_events-SENT",
           "email_events-DROPPED",
           "email_events-PROCESSED",
@@ -35,6 +36,27 @@
           "email_events-CLICK"
         ],
         "type": "string"
+      },
+      "options": {
+        "enum_titles": [
+          "companies",
+          "campaigns",
+          "activities",
+          "lists",
+          "owners",
+          "contacts",
+          "deals",
+          "pipelines",
+          "email_events-CLICK&OPEN",
+          "email_events-SENT",
+          "email_events-DROPPED",
+          "email_events-PROCESSED",
+          "email_events-DELIVERED",
+          "email_events-DEFERRED",
+          "email_events-BOUNCE",
+          "email_events-OPEN",
+          "email_events-CLICK"
+        ]
       },
       "format": "checkbox",
       "default": [
