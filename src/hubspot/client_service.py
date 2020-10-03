@@ -1,11 +1,13 @@
 import json
+import logging
 from _datetime import timedelta
-
-import pandas as pd
 from collections.abc import Iterable
 from datetime import datetime
+
+import numpy as np
+import pandas as pd
 from kbc.client_base import HttpClientBase
-from pandas.io.json import json_normalize
+from pandas import json_normalize
 
 COMPANIES_DEFAULT_COLS = ["additionalDomains", "companyId", "isDeleted", "mergeAudits", "portalId", "stateChanges"]
 COMPANY_DEFAULT_PROPERTIES = ['about_us', 'name', 'phone', 'facebook_company_page', 'city', 'country', 'website',
@@ -340,25 +342,32 @@ class HubspotClientService(HttpClientBase):
                 req_response = req.json()
 
                 final_df = final_df.append(json_normalize(req_response), sort=True)
+            # add missing cols
+            columns = ['counters.open', 'counters.click', 'id', 'name', 'counters.delivered',
+                       'counters.processed', 'counters.sent', 'lastProcessingFinishedAt',
+                       'lastProcessingStartedAt', 'lastProcessingStateChangeAt',
+                       'numIncluded', 'processingState', 'subject', 'type', 'appId', 'appName', 'contentId', ]
 
-            yield final_df if final_df.empty else final_df[['counters.open', 'counters.click', 'id', 'name']]
+            if not final_df.empty:
+                for c in columns:
+                    if c not in final_df:
+                        final_df[c] = np.nan
 
-    def get_email_events(self, start_date: datetime) -> Iterable:
+            yield final_df if final_df.empty else final_df[columns]
+
+    def get_email_events(self, start_date: datetime, events_list: list) -> Iterable:
         offset = ''
         timestamp = None
         if start_date:
             timestamp = int(start_date.timestamp() * 1000)
-        parameters = {'eventType': 'OPEN', 'startTimestamp': timestamp}
-        for open_ev in self._get_paged_result_pages(EMAIL_EVENTS, parameters, 'events', 'limit', 'offset', 'offset',
-                                                    'hasMore',
-                                                    offset, 1000, default_cols=EMAIL_EVENTS_COLS):
-            yield open_ev
 
-        parameters = {'eventType': 'CLICK', 'startTimestamp': timestamp}
-        for click_ev in self._get_paged_result_pages(EMAIL_EVENTS, parameters, 'events', 'limit', 'offset', 'offset',
-                                                     'hasMore',
-                                                     offset, 1000, default_cols=EMAIL_EVENTS_COLS):
-            yield click_ev
+        for event in events_list:
+            logging.info(f"Getting {event} events.")
+            parameters = {'eventType': event, 'startTimestamp': timestamp}
+            for open_ev in self._get_paged_result_pages(EMAIL_EVENTS, parameters, 'events', 'limit', 'offset', 'offset',
+                                                        'hasMore',
+                                                        offset, 1000, default_cols=EMAIL_EVENTS_COLS):
+                yield open_ev
 
     def get_activities(self, start_time: datetime) -> Iterable:
         offset = 0
