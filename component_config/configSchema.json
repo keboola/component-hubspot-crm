@@ -19,27 +19,35 @@
         "enum": [
           "companies",
           "campaigns",
-          "email_events",
           "activities",
           "lists",
           "owners",
           "contacts",
           "deals",
-          "pipelines"
+          "pipelines",
+          "email_events-SENT",
+          "email_events-DROPPED",
+          "email_events-PROCESSED",
+          "email_events-DELIVERED",
+          "email_events-DEFERRED",
+          "email_events-BOUNCE",
+          "email_events-OPEN",
+          "email_events-CLICK"
         ],
         "type": "string"
       },
-      "format": "table",
+      "format": "checkbox",
       "default": [
         "companies",
         "campaigns",
-        "email_events",
         "activities",
         "lists",
         "owners",
         "contacts",
         "deals",
-        "pipelines"
+        "pipelines",
+        "email_events-BOUNCE",
+        "email_events-OPEN"
       ],
       "uniqueItems": true,
       "propertyOrder": 360
