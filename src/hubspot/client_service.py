@@ -6,7 +6,7 @@ from datetime import datetime
 
 import pandas as pd
 from kbc.client_base import HttpClientBase
-from pandas.io.json import json_normalize
+from pandas import json_normalize
 
 COMPANIES_DEFAULT_COLS = ["additionalDomains", "companyId", "isDeleted", "mergeAudits", "portalId", "stateChanges"]
 COMPANY_DEFAULT_PROPERTIES = ['about_us', 'name', 'phone', 'facebook_company_page', 'city', 'country', 'website',
@@ -341,6 +341,9 @@ class HubspotClientService(HttpClientBase):
                 req_response = req.json()
 
                 final_df = final_df.append(json_normalize(req_response), sort=True)
+            logging.info(final_df.columns)
+            logging.info(final_df)
+            print(final_df.shape)
 
             yield final_df if final_df.empty else final_df[['counters.open', 'counters.click', 'id', 'name']]
 
