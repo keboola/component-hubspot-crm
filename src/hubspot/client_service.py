@@ -353,11 +353,7 @@ class HubspotClientService(HttpClientBase):
                     if c not in final_df:
                         final_df[c] = np.nan
 
-            yield final_df if final_df.empty else final_df[
-                ['counters.open', 'counters.click', 'id', 'name', 'counters.delivered',
-                 'counters.processed', 'counters.sent', 'lastProcessingFinishedAt',
-                 'lastProcessingStartedAt', 'lastProcessingStateChangeAt', 'name',
-                 'numIncluded', 'processingState', 'subject', 'type', 'appId', 'appName', 'contentId', ]]
+            yield final_df if final_df.empty else final_df[columns]
 
     def get_email_events(self, start_date: datetime, events_list: list) -> Iterable:
         offset = ''
