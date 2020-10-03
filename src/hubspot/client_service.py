@@ -1,9 +1,10 @@
 import json
+import logging
 from _datetime import timedelta
-
-import pandas as pd
 from collections.abc import Iterable
 from datetime import datetime
+
+import pandas as pd
 from kbc.client_base import HttpClientBase
 from pandas.io.json import json_normalize
 
@@ -343,22 +344,19 @@ class HubspotClientService(HttpClientBase):
 
             yield final_df if final_df.empty else final_df[['counters.open', 'counters.click', 'id', 'name']]
 
-    def get_email_events(self, start_date: datetime) -> Iterable:
+    def get_email_events(self, start_date: datetime, events_list: list) -> Iterable:
         offset = ''
         timestamp = None
         if start_date:
             timestamp = int(start_date.timestamp() * 1000)
-        parameters = {'eventType': 'OPEN', 'startTimestamp': timestamp}
-        for open_ev in self._get_paged_result_pages(EMAIL_EVENTS, parameters, 'events', 'limit', 'offset', 'offset',
-                                                    'hasMore',
-                                                    offset, 1000, default_cols=EMAIL_EVENTS_COLS):
-            yield open_ev
 
-        parameters = {'eventType': 'CLICK', 'startTimestamp': timestamp}
-        for click_ev in self._get_paged_result_pages(EMAIL_EVENTS, parameters, 'events', 'limit', 'offset', 'offset',
-                                                     'hasMore',
-                                                     offset, 1000, default_cols=EMAIL_EVENTS_COLS):
-            yield click_ev
+        for event in events_list:
+            logging.info(f"Getting {event} events.")
+            parameters = {'eventType': event, 'startTimestamp': timestamp}
+            for open_ev in self._get_paged_result_pages(EMAIL_EVENTS, parameters, 'events', 'limit', 'offset', 'offset',
+                                                        'hasMore',
+                                                        offset, 1000, default_cols=EMAIL_EVENTS_COLS):
+                yield open_ev
 
     def get_activities(self, start_time: datetime) -> Iterable:
         offset = 0

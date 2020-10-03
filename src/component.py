@@ -6,9 +6,9 @@ Template Component main class.
 import logging
 import os
 import sys
+from datetime import datetime
 
 import pandas as pd
-from datetime import datetime
 from kbc.env_handler import KBCEnvHandler
 
 from hubspot.client_service import HubspotClientService
@@ -121,10 +121,21 @@ class Component(KBCEnvHandler):
             res_file_path = os.path.join(self.tables_out_path, 'campaigns.csv')
             self._get_simple_ds(res_file_path, CAMPAIGNS_PK, client_service.get_campaigns, recent)
 
-        if 'email_events' in endpoints:
+        email_events = [e for e in endpoints if e.startswith('email_events')]
+        if email_events:
+            email_events = set(email_events)
+            # backward compatibility
+            if "email_events" in email_events:
+                email_events.add('email_events-CLICK')
+                email_events.add('email_events-OPEN')
+                email_events.remove('email_events')
+
             logging.info('Extracting Email Events from HubSpot CRM')
+
+            events_list = [e.split('-')[1] for e in email_events]
             res_file_path = os.path.join(self.tables_out_path, 'email_events.csv')
-            self._get_simple_ds(res_file_path, EMAIL_EVENTS_PK, client_service.get_email_events, start_date)
+            self._get_simple_ds(res_file_path, EMAIL_EVENTS_PK, client_service.get_email_events, start_date,
+                                events_list)
 
         if 'activities' in endpoints:
             logging.info('Extracting Activities from HubSpot CRM')
