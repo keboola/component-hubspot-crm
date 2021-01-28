@@ -174,14 +174,14 @@ class Component(KBCEnvHandler):
         :param ds_getter:
         :return:
         """
-        res_columns = list()
+        res_columns = set()
         for res in ds_getter(*fpars):
             self.output_file(res, res_file_path, res.columns)
-            res_columns = list(res.columns.values)
+            res_columns.update(set(res.columns.values))
 
         # store manifest
         if os.path.isfile(res_file_path):
-            cleaned_columns = self._cleanup_col_names(res_columns)
+            cleaned_columns = self._cleanup_col_names(list(res_columns))
             self.configuration.write_table_manifest(file_name=res_file_path, primary_key=pkey,
                                                     incremental=self.incremental,
                                                     columns=cleaned_columns)
@@ -189,7 +189,7 @@ class Component(KBCEnvHandler):
     # CONTACTS
     def get_contacts(self, client: HubspotClientService, start_time, fields, property_attributes):
         res_file_path = os.path.join(self.tables_out_path, 'contacts.csv')
-        res_columns = []
+        res_columns = set()
         for res in client.get_contacts(property_attributes, start_time, fields):
             if len(res.columns.values) == 0:
                 logging.info("No contact records for specified period.")
@@ -204,7 +204,7 @@ class Component(KBCEnvHandler):
 
             self.output_file(res, res_file_path, res.columns)
             # store columns
-            res_columns = list(res.columns.values)
+            res_columns.update(set(res.columns.values))
 
         # store manifests
         if os.path.isfile(res_file_path):
@@ -290,7 +290,7 @@ class Component(KBCEnvHandler):
     # DEALS
     def get_deals(self, client: HubspotClientService, start_time, fields, property_attributes):
         res_file_path = os.path.join(self.tables_out_path, 'deals.csv')
-        res_columns = list()
+        res_columns = set()
         for res in client.get_deals(property_attributes, start_time, fields):
             self._store_deals_stage_hist_and_list(res)
             res.drop(['properties.dealstage.versions'], 1, inplace=True, errors='ignore')
@@ -299,7 +299,7 @@ class Component(KBCEnvHandler):
             res.drop(['associations.associatedCompanyIds'], 1, inplace=True, errors='ignore')
             self.output_file(res, res_file_path, res.columns)
             # store columns
-            res_columns = list(res.columns.values)
+            res_columns.update(set(res.columns.values))
 
         # store manifests
         if os.path.isfile(res_file_path):
@@ -326,28 +326,32 @@ class Component(KBCEnvHandler):
                 temp_stage_history = temp_stage_history.reindex(columns=DEAL_STAGE_HIST_COLS).fillna('')
 
                 self.output_file(temp_stage_history, stage_hist_path, temp_stage_history.columns)
-                stage_his_cols = list(temp_stage_history.columns.values)
+                if not stage_his_cols:
+                    stage_his_cols = list(temp_stage_history.columns.values)
 
             if row.get('associations.associatedVids') and len(row['associations.associatedVids']) != '[]':
                 temp_deals_contacts_list = pd.DataFrame(row['associations.associatedVids'],
                                                         columns=['contact_vid'])
                 temp_deals_contacts_list['dealId'] = row['dealId']
                 self.output_file(temp_deals_contacts_list, c_lists_path, temp_deals_contacts_list.columns)
-                c_list_cols = list(temp_deals_contacts_list.columns.values)
+                if not c_list_cols:
+                    c_list_cols = list(temp_deals_contacts_list.columns.values)
 
             if row.get('associations.associatedCompanyIds') and len(row['associations.associatedCompanyIds']) != '[]':
                 comp_list = pd.DataFrame(row['associations.associatedCompanyIds'],
                                          columns=['associated_companyId'])
                 comp_list['dealId'] = row['dealId']
                 self.output_file(comp_list, companies_lists_path, comp_list.columns)
-                comp_list_cols = list(comp_list.columns.values)
+                if not comp_list_cols:
+                    comp_list_cols = list(comp_list.columns.values)
 
             if row.get('associations.associatedDealIds') and len(row['associations.associatedDealIds']) != '[]':
                 ass_deal_list = pd.DataFrame(row['associations.associatedDealIds'],
                                              columns=['associated_dealId'])
                 ass_deal_list['dealId'] = row['dealId']
                 self.output_file(ass_deal_list, deal_lists_path, ass_deal_list.columns)
-                ass_deal_list_cols = list(ass_deal_list.columns.values)
+                if not ass_deal_list_cols:
+                    ass_deal_list_cols = list(ass_deal_list.columns.values)
 
         if os.path.isfile(stage_hist_path):
             self.configuration.write_table_manifest(file_name=stage_hist_path, primary_key=DEAL_STAGE_HIST_PK,
@@ -371,12 +375,12 @@ class Component(KBCEnvHandler):
     # PIPELINES
     def get_pipelines(self, client: HubspotClientService):
         res_file_path = os.path.join(self.tables_out_path, 'pipelines.csv')
-        res_columns = list()
+        res_columns = set()
         for res in client.get_pipelines():
             self._store_pipeline_stages(res)
             res.drop(['stages'], 1, inplace=True, errors='ignore')
             self.output_file(res, res_file_path, res.columns)
-            res_columns = list(res.columns.values)
+            res_columns.update(set(res.columns.values))
 
         # store manifests
         if os.path.isfile(res_file_path):
@@ -388,18 +392,18 @@ class Component(KBCEnvHandler):
 
         stage_hist_path = os.path.join(self.tables_out_path, 'pipeline_stages.csv')
         # Create table with Pipelines' Stages.
-        res_columns = list()
+        res_columns = set()
         for index, row in pipelines.iterrows():
 
             if len(row['stages']) > 0:
                 temp_pipelines_stages = pd.DataFrame(row['stages'])
                 temp_pipelines_stages['pipelineId'] = row['pipelineId']
                 self.output_file(temp_pipelines_stages, stage_hist_path, temp_pipelines_stages.columns)
-                res_columns = list(temp_pipelines_stages.columns.values)
+                res_columns.update(set(temp_pipelines_stages.columns.values))
 
         if os.path.isfile(stage_hist_path):
             self.configuration.write_table_manifest(file_name=stage_hist_path, primary_key=PIPELINE_STAGE_PK,
-                                                    columns=res_columns,
+                                                    columns=list(res_columns),
                                                     incremental=self.incremental)
 
     def output_file(self, data_output, file_output, column_headers):
