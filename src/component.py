@@ -2,7 +2,6 @@
 Template Component main class.
 
 '''
-
 import logging
 import os
 import sys
@@ -175,7 +174,7 @@ class Component(KBCEnvHandler):
         :return:
         """
         res_columns = list()
-        for res in ds_getter(*fpars):
+        for res in (df for df in ds_getter(*fpars) if not df.empty):
             self.output_file(res, res_file_path, res.columns)
             res_columns = list(res.columns.values)
 
@@ -299,7 +298,8 @@ class Component(KBCEnvHandler):
             res.drop(['associations.associatedCompanyIds'], 1, inplace=True, errors='ignore')
             self.output_file(res, res_file_path, res.columns)
             # store columns
-            res_columns = list(res.columns.values)
+            if not res.empty:
+                res_columns = list(res.columns.values)
 
         # store manifests
         if os.path.isfile(res_file_path):
@@ -326,28 +326,32 @@ class Component(KBCEnvHandler):
                 temp_stage_history = temp_stage_history.reindex(columns=DEAL_STAGE_HIST_COLS).fillna('')
 
                 self.output_file(temp_stage_history, stage_hist_path, temp_stage_history.columns)
-                stage_his_cols = list(temp_stage_history.columns.values)
+                if not stage_his_cols:
+                    stage_his_cols = list(temp_stage_history.columns.values)
 
             if row.get('associations.associatedVids') and len(row['associations.associatedVids']) != '[]':
                 temp_deals_contacts_list = pd.DataFrame(row['associations.associatedVids'],
                                                         columns=['contact_vid'])
                 temp_deals_contacts_list['dealId'] = row['dealId']
                 self.output_file(temp_deals_contacts_list, c_lists_path, temp_deals_contacts_list.columns)
-                c_list_cols = list(temp_deals_contacts_list.columns.values)
+                if not c_list_cols:
+                    c_list_cols = list(temp_deals_contacts_list.columns.values)
 
             if row.get('associations.associatedCompanyIds') and len(row['associations.associatedCompanyIds']) != '[]':
                 comp_list = pd.DataFrame(row['associations.associatedCompanyIds'],
                                          columns=['associated_companyId'])
                 comp_list['dealId'] = row['dealId']
                 self.output_file(comp_list, companies_lists_path, comp_list.columns)
-                comp_list_cols = list(comp_list.columns.values)
+                if not comp_list_cols:
+                    comp_list_cols = list(comp_list.columns.values)
 
             if row.get('associations.associatedDealIds') and len(row['associations.associatedDealIds']) != '[]':
                 ass_deal_list = pd.DataFrame(row['associations.associatedDealIds'],
                                              columns=['associated_dealId'])
                 ass_deal_list['dealId'] = row['dealId']
                 self.output_file(ass_deal_list, deal_lists_path, ass_deal_list.columns)
-                ass_deal_list_cols = list(ass_deal_list.columns.values)
+                if not ass_deal_list_cols:
+                    ass_deal_list_cols = list(ass_deal_list.columns.values)
 
         if os.path.isfile(stage_hist_path):
             self.configuration.write_table_manifest(file_name=stage_hist_path, primary_key=DEAL_STAGE_HIST_PK,
@@ -376,7 +380,8 @@ class Component(KBCEnvHandler):
             self._store_pipeline_stages(res)
             res.drop(['stages'], 1, inplace=True, errors='ignore')
             self.output_file(res, res_file_path, res.columns)
-            res_columns = list(res.columns.values)
+            if not res_columns:
+                res_columns = list(res.columns.values)
 
         # store manifests
         if os.path.isfile(res_file_path):
@@ -395,7 +400,8 @@ class Component(KBCEnvHandler):
                 temp_pipelines_stages = pd.DataFrame(row['stages'])
                 temp_pipelines_stages['pipelineId'] = row['pipelineId']
                 self.output_file(temp_pipelines_stages, stage_hist_path, temp_pipelines_stages.columns)
-                res_columns = list(temp_pipelines_stages.columns.values)
+                if not res_columns:
+                    res_columns = list(temp_pipelines_stages.columns.values)
 
         if os.path.isfile(stage_hist_path):
             self.configuration.write_table_manifest(file_name=stage_hist_path, primary_key=PIPELINE_STAGE_PK,
@@ -411,15 +417,11 @@ class Component(KBCEnvHandler):
         if data_output.empty:
             logging.warning("No results for %s", file_output)
             return
+        data_output = data_output.astype(str)
+        _mode = 'w+' if not os.path.isfile(file_output) else 'a'
 
-        if not os.path.isfile(file_output):
-            with open(file_output, 'w+', encoding='utf-8', newline='') as b:
-                data_output.to_csv(b, index=False, header=False, columns=column_headers, line_terminator="")
-            b.close()
-        else:
-            with open(file_output, 'a', encoding='utf-8', newline='') as b:
-                data_output.to_csv(b, index=False, header=False, columns=column_headers, line_terminator="")
-            b.close()
+        with open(file_output, _mode, encoding='utf-8', newline='') as b:
+            data_output.to_csv(b, index=False, header=False, columns=column_headers, line_terminator="")
 
     def _parse_props(self, param):
         cols = []
