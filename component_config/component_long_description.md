@@ -17,3 +17,5 @@ a [HubSpot API Key](https://app.hubspot.com/keys/get).
 
 
 The Contacts, Companies, Engagements, Email Events  and Deals support incremental load to limit the API calls.
+
+Additional documentation available [here](https://bitbucket.org/kds_consulting_team/kds-team.ex-hubspot-crm/src/master/README.md)
