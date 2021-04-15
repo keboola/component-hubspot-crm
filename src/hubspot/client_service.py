@@ -154,7 +154,7 @@ class HubspotClientService(HttpClientBase):
             if req_response.get('results'):
                 final_df = final_df.append(json_normalize(req_response[res_obj_name]), sort=True)
             else:
-                log.debug(f'Empty response {req_response}')
+                logging.debug(f'Empty response {req_response}')
             if default_cols and not final_df.empty:
                 # dedupe
                 default_cols = list(set(default_cols))
