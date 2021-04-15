@@ -146,7 +146,7 @@ class HubspotClientService(HttpClientBase):
             resp_text = str.encode(req.text, 'utf-8')
             req_response = json.loads(resp_text)
 
-            if req_response[has_more_attr]:
+            if req_response.get(has_more_attr):
                 has_more = True
                 offset = req_response[offset_resp_attr]
             else:
