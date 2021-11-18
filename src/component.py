@@ -10,7 +10,7 @@ from datetime import datetime
 import pandas as pd
 from kbc.env_handler import KBCEnvHandler
 
-from hubspot.client_service import HubspotClientService
+from hubspot.client_service import HubspotClientService, CONTACTS_DEFAULT_COLS
 
 KEY_CONTACT_VID = 'contact_canonical_vid'
 
@@ -200,9 +200,11 @@ class Component(KBCEnvHandler):
                 self._store_contact_identity_profiles(res)
                 res.drop(['identity-profiles'], 1, inplace=True, errors='ignore')
 
+            self._drop_duplicate_properties(res, CONTACTS_DEFAULT_COLS)
             self.output_file(res, res_file_path, res.columns)
             # store columns
             res_columns = list(res.columns.values)
+            logging.debug(f"Returned contact columns: {res_columns}")
 
         # store manifests
         if os.path.isfile(res_file_path):
@@ -210,6 +212,15 @@ class Component(KBCEnvHandler):
             self.configuration.write_table_manifest(file_name=res_file_path, primary_key=CONTACT_PK,
                                                     incremental=self.incremental,
                                                     columns=cl_cols)
+
+    def _drop_duplicate_properties(self, df, property_names: list):
+        columns = list(df.columns.values)
+        drop_columns = []
+        for c in columns:
+            if c.startswith('properties') and c.split('.')[1] in property_names:
+                drop_columns.append(c)
+
+        df.drop(columns=drop_columns, inplace=True)
 
     def _store_contact_submission_and_list(self, contacts):
 
@@ -431,7 +442,11 @@ class Component(KBCEnvHandler):
     def _cleanup_col_names(self, columns):
         new_cols = list()
         for col in columns:
-            new_cols.append(col.replace('properties.', '', 1).replace('.value', '', 1).replace('.', '_'))
+            new_col = col.replace('properties.', '', 1).replace('.value', '', 1).replace('.', '_')
+            if new_col not in new_cols:
+                new_cols.append(new_col)
+            else:
+                new_cols.append(col)
         return new_cols
 
 

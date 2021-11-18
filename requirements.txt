@@ -2,5 +2,5 @@ https://github.com/keboola/python-docker-application/zipball/master#egg=keboola
 https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/get/0.2.5.zip#egg=kbc
 pytz
 python-dateutil
-pandas
+pandas===1.2.4
 dateparser
