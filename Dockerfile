@@ -1,12 +1,12 @@
-FROM python:3.7.1-slim
+FROM python:3.8.6-slim
 ENV PYTHONIOENCODING utf-8
 
 COPY . /code/
 
 RUN apt-get update && apt-get install -y build-essential
-RUN pip install flake8
 
-RUN pip3 install -r /code/requirements.txt
+RUN pip install flake8
+RUN pip install -r /code/requirements.txt
 
 WORKDIR /code/
 
