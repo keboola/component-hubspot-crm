@@ -450,7 +450,7 @@ class Component(KBCEnvHandler):
         * row by row
         """
         if data_output.empty:
-            logging.warning("No results for %s", file_output)
+            logging.debug("No results for %s", file_output)
             return
         data_output = data_output.astype(str)
         _mode = 'w+' if not os.path.isfile(file_output) else 'a'
