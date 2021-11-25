@@ -154,7 +154,7 @@ class HubspotClientService(HttpClientBase):
             if req_response.get(res_obj_name):
                 final_df = final_df.append(json_normalize(req_response[res_obj_name]), sort=True)
             else:
-                logging.warning(f'Empty response {req_response}')
+                logging.debug(f'Empty response {req_response}')
             if default_cols and not final_df.empty:
                 # dedupe
                 default_cols = list(set(default_cols))
@@ -232,14 +232,19 @@ class HubspotClientService(HttpClientBase):
         parameters = {'property': contact_properties, 'formSubmissionMode': 'all', 'showListMemberships': 'true'}
 
         # hubspot api allows only 30 days back
-        if start_time and (datetime.utcnow() - start_time).days >= 30:
+        if start_time and (datetime.utcnow() - start_time).days < 30:
             start_time = datetime.now() + timedelta(-30)
+        else:
+            start_time = None
+
         parameters['propertyMode'] = 'value_and_history'
         if start_time:
+            logging.info('Getting contacts using incremental endpoint (<30 days ago)')
             return self._get_paged_result_pages(CONTACTS_RECENT, parameters, 'contacts', 'count', 'timeOffset',
                                                 'time-offset', 'has-more', int(start_time.timestamp() * 1000), 100,
                                                 default_cols=expected_contact_cols)
         else:
+            logging.info('Getting ALL contacts using "full scan" endpoint (period >30 days ago)')
             return self._get_paged_result_pages(CONTACTS_ALL, parameters, 'contacts', 'count', 'vidOffset',
                                                 'vid-offset', 'has-more', offset, 100,
                                                 default_cols=expected_contact_cols)
