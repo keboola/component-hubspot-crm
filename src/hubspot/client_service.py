@@ -239,10 +239,12 @@ class HubspotClientService(HttpClientBase):
 
         parameters['propertyMode'] = 'value_and_history'
         if start_time:
+            logging.info('Getting contacts using incremental endpoint (<30 days ago)')
             return self._get_paged_result_pages(CONTACTS_RECENT, parameters, 'contacts', 'count', 'timeOffset',
                                                 'time-offset', 'has-more', int(start_time.timestamp() * 1000), 100,
                                                 default_cols=expected_contact_cols)
         else:
+            logging.info('Getting ALL contacts using "full scan" endpoint (period >30 days ago)')
             return self._get_paged_result_pages(CONTACTS_ALL, parameters, 'contacts', 'count', 'vidOffset',
                                                 'vid-offset', 'has-more', offset, 100,
                                                 default_cols=expected_contact_cols)
