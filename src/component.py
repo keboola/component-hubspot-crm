@@ -5,6 +5,7 @@ Template Component main class.
 import logging
 import os
 import sys
+import warnings
 from datetime import datetime
 
 import pandas as pd
@@ -74,6 +75,11 @@ class Component(KBCEnvHandler):
         else:
             self.set_gelf_logger(log_level)
 
+        # temp suppress pytz warning
+        warnings.filterwarnings(
+            "ignore",
+            message="The localize method is no longer necessary, as this time zone supports the fold attribute",
+        )
         logging.info('Loading configuration...')
 
         try:
