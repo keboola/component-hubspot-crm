@@ -232,7 +232,7 @@ class HubspotClientService(HttpClientBase):
         parameters = {'property': contact_properties, 'formSubmissionMode': 'all', 'showListMemberships': 'true'}
 
         # hubspot api allows only 30 days back
-        if start_time and (datetime.utcnow() - start_time).days > 30:
+        if start_time and (datetime.utcnow() - start_time).days < 30:
             start_time = datetime.now() + timedelta(-30)
         else:
             start_time = None

@@ -107,9 +107,11 @@ class Component(KBCEnvHandler):
             start_date, end_date = self.get_date_period_converted(period,
                                                                   datetime.utcnow().strftime('%Y-%m-%d'))
             recent = True
+            logging.info(f"Getting data since: {period}")
         else:
             start_date = None
             recent = False
+
         endpoints = params.get(KEY_ENDPOINTS, SUPPORTED_ENDPOINTS)
         property_attributes = params.get(KEY_PROPERTY_ATTRIBUTES,
                                          {"include_versions": True, "include_source": True, "include_timestamp": True})
