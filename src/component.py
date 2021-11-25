@@ -175,6 +175,7 @@ class Component(KBCEnvHandler):
         res_columns = list()
         counter = 0
         for res in (df for df in ds_getter(*fpars) if not df.empty):
+            counter += 1
             self.output_file(res, res_file_path, res.columns)
             res_columns = list(res.columns.values)
             if counter % 100 == 0:
@@ -193,6 +194,7 @@ class Component(KBCEnvHandler):
         res_columns = []
         counter = 0
         for res in client.get_contacts(property_attributes, start_time, fields):
+            counter += 1
             if len(res.columns.values) == 0:
                 logging.info("No contact records for specified period.")
                 continue
@@ -307,7 +309,9 @@ class Component(KBCEnvHandler):
     def get_deals(self, client: HubspotClientService, start_time, fields, property_attributes):
         res_file_path = os.path.join(self.tables_out_path, 'deals.csv')
         res_columns = list()
+        counter = 0
         for res in client.get_deals(property_attributes, start_time, fields):
+            counter += 1
             self._store_deals_stage_hist_and_list(res)
             res.drop(['properties.dealstage.versions'], 1, inplace=True, errors='ignore')
             res.drop(['associations.associatedVids'], 1, inplace=True, errors='ignore')
@@ -317,6 +321,9 @@ class Component(KBCEnvHandler):
             # store columns
             if not res.empty:
                 res_columns = list(res.columns.values)
+
+            if counter % 100 == 0:
+                logging.info(f"Processed {counter} Deals records.")
 
         # store manifests
         if os.path.isfile(res_file_path):
@@ -393,12 +400,17 @@ class Component(KBCEnvHandler):
     def get_pipelines(self, client: HubspotClientService):
         res_file_path = os.path.join(self.tables_out_path, 'pipelines.csv')
         res_columns = list()
+        counter = 0
         for res in client.get_pipelines():
+            counter += 1
             self._store_pipeline_stages(res)
             res.drop(['stages'], 1, inplace=True, errors='ignore')
             self.output_file(res, res_file_path, res.columns)
             if not res_columns:
                 res_columns = list(res.columns.values)
+
+            if counter % 100 == 0:
+                logging.info(f"Processed {counter} Pipelines records.")
 
         # store manifests
         if os.path.isfile(res_file_path):
