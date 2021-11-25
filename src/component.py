@@ -173,9 +173,12 @@ class Component(KBCEnvHandler):
         :return:
         """
         res_columns = list()
+        counter = 0
         for res in (df for df in ds_getter(*fpars) if not df.empty):
             self.output_file(res, res_file_path, res.columns)
             res_columns = list(res.columns.values)
+            if counter % 100 == 0:
+                logging.info(f"Processed {counter} records.")
 
         # store manifest
         if os.path.isfile(res_file_path):
@@ -188,6 +191,7 @@ class Component(KBCEnvHandler):
     def get_contacts(self, client: HubspotClientService, start_time, fields, property_attributes):
         res_file_path = os.path.join(self.tables_out_path, 'contacts.csv')
         res_columns = []
+        counter = 0
         for res in client.get_contacts(property_attributes, start_time, fields):
             if len(res.columns.values) == 0:
                 logging.info("No contact records for specified period.")
@@ -199,6 +203,9 @@ class Component(KBCEnvHandler):
             if 'identity-profiles' in res.columns:
                 self._store_contact_identity_profiles(res)
                 res.drop(['identity-profiles'], 1, inplace=True, errors='ignore')
+
+            if counter % 100 == 0:
+                logging.info(f"Processed {counter} Contact records.")
 
             self._drop_duplicate_properties(res, CONTACTS_DEFAULT_COLS)
             self.output_file(res, res_file_path, res.columns)

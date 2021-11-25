@@ -232,8 +232,11 @@ class HubspotClientService(HttpClientBase):
         parameters = {'property': contact_properties, 'formSubmissionMode': 'all', 'showListMemberships': 'true'}
 
         # hubspot api allows only 30 days back
-        if start_time and (datetime.utcnow() - start_time).days >= 30:
+        if start_time and (datetime.utcnow() - start_time).days > 30:
             start_time = datetime.now() + timedelta(-30)
+        else:
+            start_time = None
+
         parameters['propertyMode'] = 'value_and_history'
         if start_time:
             return self._get_paged_result_pages(CONTACTS_RECENT, parameters, 'contacts', 'count', 'timeOffset',
