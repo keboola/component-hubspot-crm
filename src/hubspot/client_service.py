@@ -1,6 +1,5 @@
 import json
 import logging
-from _datetime import timedelta
 from collections.abc import Iterable
 from datetime import datetime
 
@@ -231,10 +230,8 @@ class HubspotClientService(HttpClientBase):
 
         parameters = {'property': contact_properties, 'formSubmissionMode': 'all', 'showListMemberships': 'true'}
 
-        # hubspot api allows only 30 days back
-        if start_time and (datetime.utcnow() - start_time).days < 30:
-            start_time = datetime.now() + timedelta(-30)
-        else:
+        # hubspot api allows only 30 days back, get all data if larger
+        if start_time and (datetime.utcnow() - start_time).days >= 30:
             start_time = None
 
         parameters['propertyMode'] = 'value_and_history'
