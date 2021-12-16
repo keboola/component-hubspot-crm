@@ -105,7 +105,7 @@ class Component(KBCEnvHandler):
             if not dateparser.parse(period):
                 raise ValueError(F'Invalid date from period "{period}", check the supported format')
             start_date, end_date = self.get_date_period_converted(period,
-                                                                  datetime.utcnow().strftime('%Y-%m-%d'))
+                                                                  datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'))
             recent = True
             logging.info(f"Getting data since: {period}")
         else:
