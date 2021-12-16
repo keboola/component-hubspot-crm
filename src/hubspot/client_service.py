@@ -169,7 +169,7 @@ class HubspotClientService(HttpClientBase):
         This simulates the expected behaviour -> gets data from now until the point in time
 
         :param parameters:
-        :param timeoffset:
+        :param since_time_offset:
         :param limit:
         :param default_cols:
         :return:
@@ -266,7 +266,7 @@ class HubspotClientService(HttpClientBase):
         else:
             logging.info('Getting ALL contacts using "full scan" endpoint (period >30 days ago)')
             return self._get_paged_result_pages(CONTACTS_ALL, parameters, 'contacts', 'count', 'vidOffset',
-                                                'vid-timeoffset', 'has-more', offset, 100,
+                                                'vid-offset', 'has-more', offset, 100,
                                                 default_cols=expected_contact_cols)
 
     def get_companies(self, property_attributes, recent=False, fields=None):
@@ -283,13 +283,13 @@ class HubspotClientService(HttpClientBase):
         parameters = {'properties': company_properties}
 
         if recent:
-            return self._get_paged_result_pages(COMPANIES_RECENT, parameters, 'results', 'count', 'timeoffset',
-                                                'timeoffset',
+            return self._get_paged_result_pages(COMPANIES_RECENT, parameters, 'results', 'count', 'offset',
+                                                'offset',
                                                 'hasMore',
                                                 offset, 200, default_cols=expected_company_cols)
         else:
-            return self._get_paged_result_pages(COMPANIES_ALL, parameters, 'companies', 'limit', 'timeoffset',
-                                                'timeoffset',
+            return self._get_paged_result_pages(COMPANIES_ALL, parameters, 'companies', 'limit', 'offset',
+                                                'offset',
                                                 'has-more', offset, 250, default_cols=expected_company_cols)
 
     def get_company_properties(self):
@@ -348,12 +348,12 @@ class HubspotClientService(HttpClientBase):
                       'includeAssociations': 'true'}
         if start_time:
             parameters['since'] = int(start_time.timestamp() * 1000)
-            return self._get_paged_result_pages(DEALS_RECENT, parameters, 'results', 'count', 'timeoffset',
-                                                'timeoffset',
+            return self._get_paged_result_pages(DEALS_RECENT, parameters, 'results', 'count', 'offset',
+                                                'offset',
                                                 'hasMore',
                                                 offset, 100, default_cols=expected_deal_cols)
         else:
-            return self._get_paged_result_pages(DEALS_ALL, parameters, 'deals', 'limit', 'timeoffset', 'timeoffset',
+            return self._get_paged_result_pages(DEALS_ALL, parameters, 'deals', 'limit', 'offset', 'offset',
                                                 'hasMore',
                                                 offset, 250, default_cols=expected_deal_cols)
 
@@ -364,7 +364,7 @@ class HubspotClientService(HttpClientBase):
         else:
             url = CAMPAIGNS_BY_ID
 
-        for res in self._get_paged_result_pages(url, {}, 'campaigns', 'limit', 'timeoffset', 'timeoffset', 'hasMore',
+        for res in self._get_paged_result_pages(url, {}, 'campaigns', 'limit', 'offset', 'offset', 'hasMore',
                                                 None,
                                                 1000):
 
@@ -396,8 +396,8 @@ class HubspotClientService(HttpClientBase):
         for event in events_list:
             logging.info(f"Getting {event} events.")
             parameters = {'eventType': event, 'startTimestamp': timestamp}
-            for open_ev in self._get_paged_result_pages(EMAIL_EVENTS, parameters, 'events', 'limit', 'timeoffset',
-                                                        'timeoffset',
+            for open_ev in self._get_paged_result_pages(EMAIL_EVENTS, parameters, 'events', 'limit', 'offset',
+                                                        'offset',
                                                         'hasMore',
                                                         offset, 1000, default_cols=EMAIL_EVENTS_COLS):
                 yield open_ev
@@ -407,10 +407,10 @@ class HubspotClientService(HttpClientBase):
 
         if start_time:
             pages = self._get_paged_result_pages(ENGAGEMENTS_PAGED_SINCE, {"since": int(start_time.timestamp() * 1000)},
-                                                 'results', 'count', 'timeoffset', 'timeoffset', 'hasMore', offset, 250,
+                                                 'results', 'count', 'offset', 'offset', 'hasMore', offset, 250,
                                                  default_cols=ENGAGEMENTS_COLS)
         else:
-            pages = self._get_paged_result_pages(ENGAGEMENTS_PAGED, {}, 'results', 'limit', 'timeoffset', 'timeoffset',
+            pages = self._get_paged_result_pages(ENGAGEMENTS_PAGED, {}, 'results', 'limit', 'offset', 'offset',
                                                  'hasMore',
                                                  offset, 250, default_cols=ENGAGEMENTS_COLS)
         for pg_res in pages:
@@ -423,7 +423,7 @@ class HubspotClientService(HttpClientBase):
     def get_lists(self):
         offset = 0
 
-        return self._get_paged_result_pages(LISTS, {}, 'lists', 'limit', 'timeoffset', 'timeoffset', 'has-more',
+        return self._get_paged_result_pages(LISTS, {}, 'lists', 'limit', 'offset', 'offset', 'has-more',
                                             offset, 250, default_cols=LISTS_COLS)
 
     def get_pipelines(self, include_inactive=None):
