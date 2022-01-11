@@ -361,7 +361,7 @@ class Component(KBCEnvHandler):
                 if not stage_his_cols:
                     stage_his_cols = list(temp_stage_history.columns.values)
 
-            if row.get('associations.associatedVids') and len(row['associations.associatedVids']) != '[]':
+            if row.get('associations.associatedVids') and len(row['associations.associatedVids']) != 0:
                 temp_deals_contacts_list = pd.DataFrame(row['associations.associatedVids'],
                                                         columns=['contact_vid'])
                 temp_deals_contacts_list['dealId'] = row['dealId']
@@ -369,7 +369,7 @@ class Component(KBCEnvHandler):
                 if not c_list_cols:
                     c_list_cols = list(temp_deals_contacts_list.columns.values)
 
-            if row.get('associations.associatedCompanyIds') and len(row['associations.associatedCompanyIds']) != '[]':
+            if row.get('associations.associatedCompanyIds') and len(row['associations.associatedCompanyIds']) != 0:
                 comp_list = pd.DataFrame(row['associations.associatedCompanyIds'],
                                          columns=['associated_companyId'])
                 comp_list['dealId'] = row['dealId']
@@ -377,7 +377,7 @@ class Component(KBCEnvHandler):
                 if not comp_list_cols:
                     comp_list_cols = list(comp_list.columns.values)
 
-            if row.get('associations.associatedDealIds') and len(row['associations.associatedDealIds']) != '[]':
+            if row.get('associations.associatedDealIds') and len(row['associations.associatedDealIds']) != 0:
                 ass_deal_list = pd.DataFrame(row['associations.associatedDealIds'],
                                              columns=['associated_dealId'])
                 ass_deal_list['dealId'] = row['dealId']
