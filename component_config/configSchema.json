@@ -25,6 +25,9 @@
           "contacts",
           "deals",
           "pipelines",
+          "calls",
+          "emails",
+          "meetings",
           "email_events",
           "email_events-SENT",
           "email_events-DROPPED",
@@ -45,6 +48,9 @@
             "contacts",
             "deals",
             "pipelines",
+            "calls",
+            "emails",
+            "meetings",
             "email_events-CLICK&OPEN",
             "email_events-SENT",
             "email_events-DROPPED",
@@ -203,6 +209,42 @@
       "description": "Comma separated list of contact properties. The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched.",
       "uniqueItems": true,
       "propertyOrder": 600
+    },
+    "call_properties": {
+      "type": "string",
+      "title": "Call additional properties (if selected)",
+      "format": "textarea",
+      "default": "",
+      "options": {
+        "input_height": "100px"
+      },
+      "description": "Comma separated list of call properties. The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched.",
+      "uniqueItems": true,
+      "propertyOrder": 610
+    },
+    "email_properties": {
+      "type": "string",
+      "title": "Email additional properties (if selected)",
+      "format": "textarea",
+      "default": "",
+      "options": {
+        "input_height": "100px"
+      },
+      "description": "Comma separated list of email properties. The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched.",
+      "uniqueItems": true,
+      "propertyOrder": 620
+    },
+    "meeting_properties": {
+      "type": "string",
+      "title": "Meetings additional properties (if selected)",
+      "format": "textarea",
+      "default": "",
+      "options": {
+        "input_height": "100px"
+      },
+      "description": "Comma separated list of meeting properties. The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched.",
+      "uniqueItems": true,
+      "propertyOrder": 620
     }
   }
 }

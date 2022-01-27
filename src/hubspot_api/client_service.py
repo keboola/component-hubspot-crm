@@ -2,11 +2,14 @@ import json
 import logging
 from collections.abc import Iterable
 from datetime import datetime
+from typing import List
 
 import numpy as np
 import pandas as pd
 from kbc.client_base import HttpClientBase
 from pandas import json_normalize
+
+from hubspot_api import client_v3
 
 COMPANIES_DEFAULT_COLS = ["additionalDomains", "companyId", "isDeleted", "mergeAudits", "portalId", "stateChanges"]
 COMPANY_DEFAULT_PROPERTIES = ['about_us', 'name', 'phone', 'facebook_company_page', 'city', 'country', 'website',
@@ -130,6 +133,7 @@ class HubspotClientService(HttpClientBase):
     def __init__(self, token):
         HttpClientBase.__init__(self, base_url=BASE_URL, max_retries=MAX_RETRIES, backoff_factor=0.3,
                                 status_forcelist=(429, 500, 502, 504), default_params={"hapikey": token})
+        self._client_v3 = client_v3.ClientV3(token)
 
     def _get_paged_result_pages(self, endpoint, parameters, res_obj_name, limit_attr, offset_req_attr, offset_resp_attr,
                                 has_more_attr, offset, limit, default_cols=None):
@@ -162,6 +166,33 @@ class HubspotClientService(HttpClientBase):
             # sort cols
             final_df = final_df.reindex(sorted(final_df.columns), axis=1)
             yield final_df
+
+    def _get_paged_result_pages_dict(self, endpoint, parameters, res_obj_name, limit_attr, offset_req_attr,
+                                     offset_resp_attr,
+                                     has_more_attr, offset, limit, default_cols=None):
+
+        has_more = True
+        while has_more:
+            final_result = {}
+            parameters[offset_req_attr] = offset
+            parameters[limit_attr] = limit
+
+            req = self.get_raw(self.base_url + endpoint, params=parameters)
+            self._check_http_result(req, endpoint)
+            resp_text = str.encode(req.text, 'utf-8')
+            req_response = json.loads(resp_text)
+
+            if req_response.get(has_more_attr):
+                has_more = True
+                offset = req_response[offset_resp_attr]
+            else:
+                has_more = False
+            if req_response.get(res_obj_name):
+                final_result = req_response.get(res_obj_name)
+            else:
+                logging.debug(f'Empty response {req_response}')
+
+            yield final_result
 
     def _get_contact_recent_pages(self, parameters, since_time_offset, limit, default_cols=None):
         """
@@ -254,7 +285,7 @@ class HubspotClientService(HttpClientBase):
 
         parameters = {'property': contact_properties, 'formSubmissionMode': 'all', 'showListMemberships': 'true'}
 
-        # hubspot api allows only 30 days back, get all data if larger
+        # hubspot_api api allows only 30 days back, get all data if larger
         if start_time and (datetime.utcnow() - start_time).days >= 30:
             start_time = None
 
@@ -447,3 +478,6 @@ class HubspotClientService(HttpClientBase):
         final_df = final_df.append(json_normalize(req_response), sort=True)
 
         return [final_df]
+
+    def get_v3_engagement_object(self, object_type: str, properties: List[str] = None):
+        return self._client_v3.get_engagement_object(object_type, properties)

@@ -1,4 +1,7 @@
-https://bitbucket.org/kds_consulting_team/keboola-python-util-lib/get/0.2.5.zip#egg=kbc
+keboola.component
+hubspot-api-client
+keboola.csvwriter==1.0.1
+keboola.utils
 pytz
 python-dateutil
 pandas===1.2.4
