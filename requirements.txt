@@ -1,6 +1,7 @@
 keboola.component
 hubspot-api-client
 keboola.csvwriter==1.0.1
+keboola.http-client
 keboola.utils
 pytz
 python-dateutil
