@@ -6,7 +6,7 @@ from typing import List
 
 import numpy as np
 import pandas as pd
-from kbc.client_base import HttpClientBase
+from keboola.http_client import HttpClient
 from pandas import json_normalize
 
 from hubspot_api import client_v3
@@ -128,11 +128,11 @@ CONTACTS_RECENT = 'contacts/v1/lists/recently_updated/contacts/recent'
 COMPANY_PROPERTIES = 'properties/v1/companies/properties/'
 
 
-class HubspotClientService(HttpClientBase):
+class HubspotClientService(HttpClient):
 
     def __init__(self, token):
-        HttpClientBase.__init__(self, base_url=BASE_URL, max_retries=MAX_RETRIES, backoff_factor=0.3,
-                                status_forcelist=(429, 500, 502, 504), default_params={"hapikey": token})
+        HttpClient.__init__(self, base_url=BASE_URL, max_retries=MAX_RETRIES, backoff_factor=0.3,
+                            status_forcelist=(429, 500, 502, 504), default_params={"hapikey": token})
         self._client_v3 = client_v3.ClientV3(token)
 
     def _get_paged_result_pages(self, endpoint, parameters, res_obj_name, limit_attr, offset_req_attr, offset_resp_attr,

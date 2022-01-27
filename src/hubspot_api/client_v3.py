@@ -3,7 +3,7 @@ import logging
 from enum import Enum
 from typing import List, Union
 
-from kbc.client_base import HttpClientBase
+from keboola.http_client import HttpClient
 
 MAX_RETRIES = 10
 BASE_URL = 'https://api.hubapi.com/'
@@ -38,11 +38,11 @@ class EngagementObjects(Enum):
         return True
 
 
-class ClientV3(HttpClientBase):
+class ClientV3(HttpClient):
 
     def __init__(self, token):
-        HttpClientBase.__init__(self, base_url=BASE_URL, max_retries=MAX_RETRIES, backoff_factor=0.3,
-                                status_forcelist=(429, 500, 502, 504), default_params={"hapikey": token})
+        HttpClient.__init__(self, base_url=BASE_URL, max_retries=MAX_RETRIES, backoff_factor=0.3,
+                            status_forcelist=(429, 500, 502, 504), default_params={"hapikey": token})
 
     def _get_paged_result_pages(self, endpoint, parameters, limit=100, default_cols=None):
 
