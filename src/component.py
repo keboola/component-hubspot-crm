@@ -2,16 +2,25 @@
 Template Component main class.
 
 '''
+import json
 import logging
 import os
 import sys
 import warnings
-from datetime import datetime
+from typing import Dict
 
+import keboola.csvwriter
+import keboola.utils as kbcutils
 import pandas as pd
-from kbc.env_handler import KBCEnvHandler
+from keboola.component import ComponentBase
+from keboola.csvwriter import ElasticDictWriter
 
-from hubspot.client_service import HubspotClientService, CONTACTS_DEFAULT_COLS
+from hubspot_api.client_service import HubspotClientService, CONTACTS_DEFAULT_COLS
+
+ENGAGEMENT_ASSOC_COLS = ["contactIds",
+                         "companyIds",
+                         "dealIds",
+                         "ownerIds"]
 
 KEY_CONTACT_VID = 'contact_canonical_vid'
 
@@ -57,23 +66,25 @@ CONTACT_PROFILE_IDENTITIES_COLS = ['type', 'value', 'timestamp', 'is-primary', '
 CONTACT_LISTS_COLS = ["internal-list-id", "is-member", "static-list-id", "timestamp", "vid", KEY_CONTACT_VID]
 DEAL_STAGE_HIST_COLS = ['name', 'source', 'sourceId', 'sourceVid', 'timestamp', 'value', 'dealId']
 
+ENGAGEMENT_COLS = [
+    "id",
+    "portalId",
+    "active",
+    "createdAt",
+    "lastUpdated",
+    "ownerId",
+    "type",
+    "timestamp",
+    "metadata"
+]
+
 APP_VERSION = '1.0.1'
 
 
-class Component(KBCEnvHandler):
+class Component(ComponentBase):
 
     def __init__(self, debug=False):
-        KBCEnvHandler.__init__(self, MANDATORY_PARS)
-        # override debug from config
-        if self.cfg_params.get('debug'):
-            debug = True
-
-        log_level = logging.DEBUG if debug else logging.INFO
-        if self.cfg_params.get(KEY_STDLOG):
-            # for debug purposes
-            self.set_default_logger(log_level)
-        else:
-            self.set_gelf_logger(log_level)
+        ComponentBase.__init__(self)
 
         # temp suppress pytz warning
         warnings.filterwarnings(
@@ -83,19 +94,22 @@ class Component(KBCEnvHandler):
         logging.info('Loading configuration...')
 
         try:
-            self.validate_config(MANDATORY_PARS)
-            self.validate_image_parameters(MANDATORY_IMAGE_PARS)
+            self.validate_configuration_parameters(MANDATORY_PARS)
         except ValueError as ex:
             logging.exception(ex)
             exit(1)
 
-        self.incremental = self.cfg_params.get(KEY_INCR_OUT)
+        self.incremental = self.configuration.parameters.get(KEY_INCR_OUT)
+        state = self.get_state_file() or {}
+        self._object_schemas: dict = state.get('table_schemas', {})
+
+        self._writer_cache: Dict[str, ElasticDictWriter] = {}
 
     def run(self):
         '''
         Main execution code
         '''
-        params = self.cfg_params  # noqa
+        params = self.configuration.parameters  # noqa
         token = params[KEY_API_TOKEN]
         client_service = HubspotClientService(token)
 
@@ -104,8 +118,7 @@ class Component(KBCEnvHandler):
             period = params.get(KEY_PERIOD_FROM)
             if not dateparser.parse(period):
                 raise ValueError(F'Invalid date from period "{period}", check the supported format')
-            start_date, end_date = self.get_date_period_converted(period,
-                                                                  datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'))
+            start_date, end_date = kbcutils.parse_datetime_interval(period, 'now')
             recent = True
             logging.info(f"Getting data since: {period}")
         else:
@@ -172,6 +185,28 @@ class Component(KBCEnvHandler):
             logging.info('Extracting Pipelines from HubSpot CRM')
             self.get_pipelines(client_service)
 
+        if 'dispositions' in endpoints:
+            logging.info('Extracting Engagement Dispositons from HubSpot CRM')
+            res_file_path = os.path.join(self.tables_out_path, 'engagement-dispositions.csv')
+            self._get_simple_ds(res_file_path, ['id'], client_service.get_owners, recent)
+
+        if 'calls' in endpoints:
+            logging.info('Extracting Calls HubSpot CRM')
+            self._dowload_crm_v3_object(client_service, 'calls',
+                                        properties=self._parse_props(params.get('call_properties', [])))
+
+        if 'emails' in endpoints:
+            logging.info('Extracting Emails HubSpot CRM')
+            self._dowload_crm_v3_object(client_service, 'emails',
+                                        properties=self._parse_props(params.get('email_properties', [])))
+
+        if 'meetings' in endpoints:
+            logging.info('Extracting Meetings HubSpot CRM')
+            self._dowload_crm_v3_object(client_service, 'meetings',
+                                        properties=self._parse_props(params.get('meeting_properties', [])))
+
+        self._close_files()
+
     def _get_simple_ds(self, res_file_path, pkey, ds_getter, *fpars):
         """
         Generic method to get simple objects
@@ -192,9 +227,9 @@ class Component(KBCEnvHandler):
         # store manifest
         if os.path.isfile(res_file_path):
             cleaned_columns = self._cleanup_col_names(res_columns)
-            self.configuration.write_table_manifest(file_name=res_file_path, primary_key=pkey,
-                                                    incremental=self.incremental,
-                                                    columns=cleaned_columns)
+            self._write_table_manifest_legacy(file_name=res_file_path, primary_key=pkey,
+                                              incremental=self.incremental,
+                                              columns=cleaned_columns)
 
     # CONTACTS
     def get_contacts(self, client: HubspotClientService, start_time, fields, property_attributes):
@@ -226,9 +261,9 @@ class Component(KBCEnvHandler):
         # store manifests
         if os.path.isfile(res_file_path):
             cl_cols = self._cleanup_col_names(res_columns)
-            self.configuration.write_table_manifest(file_name=res_file_path, primary_key=CONTACT_PK,
-                                                    incremental=self.incremental,
-                                                    columns=cl_cols)
+            self._write_table_manifest_legacy(file_name=res_file_path, primary_key=CONTACT_PK,
+                                              incremental=self.incremental,
+                                              columns=cl_cols)
 
     def _drop_duplicate_properties(self, df, property_names: list):
         columns = list(df.columns.values)
@@ -264,13 +299,13 @@ class Component(KBCEnvHandler):
                 self.output_file(temp_contacts_lists, c_lists_path, temp_contacts_lists.columns)
 
         if os.path.isfile(c_subform_path):
-            self.configuration.write_table_manifest(file_name=c_subform_path, primary_key=C_SUBMISSION_PK,
-                                                    columns=CONTACT_FORM_SUBISSION_COLS,
-                                                    incremental=self.incremental)
+            self._write_table_manifest_legacy(file_name=c_subform_path, primary_key=C_SUBMISSION_PK,
+                                              columns=CONTACT_FORM_SUBISSION_COLS,
+                                              incremental=self.incremental)
         if os.path.isfile(c_lists_path):
-            self.configuration.write_table_manifest(file_name=c_lists_path, primary_key=CONTACT_LIST_PK,
-                                                    columns=CONTACT_LISTS_COLS,
-                                                    incremental=self.incremental)
+            self._write_table_manifest_legacy(file_name=c_lists_path, primary_key=CONTACT_LIST_PK,
+                                              columns=CONTACT_LISTS_COLS,
+                                              incremental=self.incremental)
 
     def _store_contact_identity_profiles(self, contacts):
         c_profiles = os.path.join(self.tables_out_path, 'contacts_identity_profiles.csv')
@@ -297,14 +332,14 @@ class Component(KBCEnvHandler):
                 self.output_file(tmp_profiles, c_profiles, tmp_profiles.columns)
 
         if os.path.isfile(c_profiles):
-            self.configuration.write_table_manifest(file_name=c_profiles, primary_key=['identity_profile_pk'],
-                                                    columns=CONTACT_PROFILES_COLS,
-                                                    incremental=self.incremental)
+            self._write_table_manifest_legacy(file_name=c_profiles, primary_key=['identity_profile_pk'],
+                                              columns=CONTACT_PROFILES_COLS,
+                                              incremental=self.incremental)
         if os.path.isfile(c_identities):
-            self.configuration.write_table_manifest(file_name=c_identities,
-                                                    primary_key=['identity_profile_pk', 'type', 'value'],
-                                                    columns=CONTACT_PROFILE_IDENTITIES_COLS,
-                                                    incremental=self.incremental)
+            self._write_table_manifest_legacy(file_name=c_identities,
+                                              primary_key=['identity_profile_pk', 'type', 'value'],
+                                              columns=CONTACT_PROFILE_IDENTITIES_COLS,
+                                              incremental=self.incremental)
 
     def _store_identities(self, identities, res_file, identity_profile_pk):
         for index, row in identities.iteritems():
@@ -336,9 +371,9 @@ class Component(KBCEnvHandler):
         # store manifests
         if os.path.isfile(res_file_path):
             cl_cols = self._cleanup_col_names(res_columns)
-            self.configuration.write_table_manifest(file_name=res_file_path, primary_key=DEAL_PK,
-                                                    incremental=self.incremental,
-                                                    columns=cl_cols)
+            self._write_table_manifest_legacy(file_name=res_file_path, primary_key=DEAL_PK,
+                                              incremental=self.incremental,
+                                              columns=cl_cols)
 
     def _store_deals_stage_hist_and_list(self, deals):
 
@@ -361,7 +396,7 @@ class Component(KBCEnvHandler):
                 if not stage_his_cols:
                     stage_his_cols = list(temp_stage_history.columns.values)
 
-            if row.get('associations.associatedVids') and len(row['associations.associatedVids']) != '[]':
+            if row.get('associations.associatedVids') and len(row['associations.associatedVids']) != 0:
                 temp_deals_contacts_list = pd.DataFrame(row['associations.associatedVids'],
                                                         columns=['contact_vid'])
                 temp_deals_contacts_list['dealId'] = row['dealId']
@@ -369,7 +404,7 @@ class Component(KBCEnvHandler):
                 if not c_list_cols:
                     c_list_cols = list(temp_deals_contacts_list.columns.values)
 
-            if row.get('associations.associatedCompanyIds') and len(row['associations.associatedCompanyIds']) != '[]':
+            if row.get('associations.associatedCompanyIds') and len(row['associations.associatedCompanyIds']) != 0:
                 comp_list = pd.DataFrame(row['associations.associatedCompanyIds'],
                                          columns=['associated_companyId'])
                 comp_list['dealId'] = row['dealId']
@@ -377,7 +412,7 @@ class Component(KBCEnvHandler):
                 if not comp_list_cols:
                     comp_list_cols = list(comp_list.columns.values)
 
-            if row.get('associations.associatedDealIds') and len(row['associations.associatedDealIds']) != '[]':
+            if row.get('associations.associatedDealIds') and len(row['associations.associatedDealIds']) != 0:
                 ass_deal_list = pd.DataFrame(row['associations.associatedDealIds'],
                                              columns=['associated_dealId'])
                 ass_deal_list['dealId'] = row['dealId']
@@ -386,23 +421,23 @@ class Component(KBCEnvHandler):
                     ass_deal_list_cols = list(ass_deal_list.columns.values)
 
         if os.path.isfile(stage_hist_path):
-            self.configuration.write_table_manifest(file_name=stage_hist_path, primary_key=DEAL_STAGE_HIST_PK,
-                                                    columns=stage_his_cols,
-                                                    incremental=self.incremental)
+            self._write_table_manifest_legacy(file_name=stage_hist_path, primary_key=DEAL_STAGE_HIST_PK,
+                                              columns=stage_his_cols,
+                                              incremental=self.incremental)
         if os.path.isfile(c_lists_path):
-            self.configuration.write_table_manifest(file_name=c_lists_path, primary_key=DEAL_C_LIST_PK,
-                                                    columns=c_list_cols,
-                                                    incremental=self.incremental)
+            self._write_table_manifest_legacy(file_name=c_lists_path, primary_key=DEAL_C_LIST_PK,
+                                              columns=c_list_cols,
+                                              incremental=self.incremental)
         if os.path.isfile(deal_lists_path):
-            self.configuration.write_table_manifest(file_name=deal_lists_path,
-                                                    primary_key=['dealId', 'associated_dealId'],
-                                                    columns=ass_deal_list_cols,
-                                                    incremental=self.incremental)
+            self._write_table_manifest_legacy(file_name=deal_lists_path,
+                                              primary_key=['dealId', 'associated_dealId'],
+                                              columns=ass_deal_list_cols,
+                                              incremental=self.incremental)
         if os.path.isfile(companies_lists_path):
-            self.configuration.write_table_manifest(file_name=companies_lists_path,
-                                                    primary_key=['dealId', 'associated_companyId'],
-                                                    columns=comp_list_cols,
-                                                    incremental=self.incremental)
+            self._write_table_manifest_legacy(file_name=companies_lists_path,
+                                              primary_key=['dealId', 'associated_companyId'],
+                                              columns=comp_list_cols,
+                                              incremental=self.incremental)
 
     # PIPELINES
     def get_pipelines(self, client: HubspotClientService):
@@ -423,8 +458,8 @@ class Component(KBCEnvHandler):
         # store manifests
         if os.path.isfile(res_file_path):
             cl_cols = self._cleanup_col_names(res_columns)
-            self.configuration.write_table_manifest(file_name=res_file_path, primary_key=PIPELINE_PK, columns=cl_cols,
-                                                    incremental=self.incremental)
+            self._write_table_manifest_legacy(file_name=res_file_path, primary_key=PIPELINE_PK, columns=cl_cols,
+                                              incremental=self.incremental)
 
     def _store_pipeline_stages(self, pipelines):
 
@@ -441,9 +476,25 @@ class Component(KBCEnvHandler):
                     res_columns = list(temp_pipelines_stages.columns.values)
 
         if os.path.isfile(stage_hist_path):
-            self.configuration.write_table_manifest(file_name=stage_hist_path, primary_key=PIPELINE_STAGE_PK,
-                                                    columns=res_columns,
-                                                    incremental=self.incremental)
+            self._write_table_manifest_legacy(file_name=stage_hist_path, primary_key=PIPELINE_STAGE_PK,
+                                              columns=res_columns,
+                                              incremental=self.incremental)
+
+    def _dowload_crm_v3_object(self, client: HubspotClientService, object_name: str, **kwargs):
+        result_table = self.create_out_table_definition(f'{object_name}.csv', incremental=self.incremental,
+                                                        primary_key=['id'])
+        result_path = result_table.full_path
+        header_columns = self._object_schemas.get(result_path, ['id'])
+        counter = 0
+        for res in client.get_v3_engagement_object(object_name, **kwargs):
+            if counter % 500 == 0:
+                logging.info(f"Downloaded {counter} records.")
+            for row in res:
+                counter += 1
+                self.output_object_dict(row, result_path, header_columns)
+
+        if counter > 0:
+            self.write_manifest(result_table)
 
     def output_file(self, data_output, file_output, column_headers):
         """
@@ -460,6 +511,36 @@ class Component(KBCEnvHandler):
         with open(file_output, _mode, encoding='utf-8', newline='') as b:
             data_output.to_csv(b, index=False, header=False, columns=column_headers, line_terminator="")
 
+    def output_object_dict(self, data_output: dict, file_output, column_headers):
+        """
+        Output the dataframe input to destination file
+        Append to the file if file does not exist
+        * row by row
+        """
+        writer = self._get_writer_from_cache(file_output, column_headers)
+        data_output = self._flatten_properties(data_output)
+        writer.writerow(data_output)
+
+    def _flatten_properties(self, result: dict):
+        properties = result.pop('properties', {})
+        for p in properties:
+            result[p] = properties[p]
+        return result
+
+    def _get_writer_from_cache(self, output_path: str, column_headers):
+        if not self._writer_cache.get(output_path):
+            self._writer_cache[output_path] = keboola.csvwriter.ElasticDictWriter(output_path, column_headers)
+            self._writer_cache[output_path].writeheader()
+
+        return self._writer_cache[output_path]
+
+    def _close_files(self):
+        for key, f in self._writer_cache.items():
+            f.close()
+            self._object_schemas[key] = f.fieldnames
+
+        self.write_state_file({"table_schemas": self._object_schemas})
+
     def _parse_props(self, param):
         cols = []
         if param:
@@ -475,6 +556,43 @@ class Component(KBCEnvHandler):
             else:
                 new_cols.append(col)
         return new_cols
+
+    def _write_table_manifest_legacy(self,
+                                     file_name,
+                                     destination='',
+                                     primary_key=None,
+                                     columns=None,
+                                     incremental=None):
+        """
+        Write manifest for output table Manifest is used for
+        the table to be stored in KBC Storage.
+        Args:
+            file_name: Local file name of the CSV with table data.
+            destination: String name of the table in Storage.
+            primary_key: List with names of columns used for primary key.
+            columns: List of columns for headless CSV files
+            incremental: Set to true to enable incremental loading
+        """
+        manifest = {}
+        if destination:
+            if isinstance(destination, str):
+                manifest['destination'] = destination
+            else:
+                raise TypeError("Destination must be a string")
+        if primary_key:
+            if isinstance(primary_key, list):
+                manifest['primary_key'] = primary_key
+            else:
+                raise TypeError("Primary key must be a list")
+        if columns:
+            if isinstance(columns, list):
+                manifest['columns'] = columns
+            else:
+                raise TypeError("Columns must by a list")
+        if incremental:
+            manifest['incremental'] = True
+        with open(file_name + '.manifest', 'w') as manifest_file:
+            json.dump(manifest, manifest_file)
 
 
 """
