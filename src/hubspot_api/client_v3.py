@@ -1,7 +1,7 @@
 import json
 import logging
 from enum import Enum
-from typing import List, Union
+from typing import List, Union, Iterator
 
 from keboola.http_client import HttpClient
 
@@ -93,6 +93,14 @@ class ClientV3(HttpClient):
 
         if http_error_msg:
             raise RuntimeError(http_error_msg)
+
+    def get_forms(self, archived: bool = False, form_types: List[str] = None) -> Iterator[List[str]]:
+        request_params = {"archived": archived}
+        if form_types:
+            form_types_str = ','.join(form_types)
+            request_params['formTypes'] = form_types_str
+
+        return self._get_paged_result_pages('marketing/v3/forms', request_params)
 
     def get_engagement_calls(self, properties: List[str] = None):
 

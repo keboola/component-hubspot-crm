@@ -16,6 +16,7 @@ from keboola.component import ComponentBase
 from keboola.csvwriter import ElasticDictWriter
 
 from hubspot_api.client_service import HubspotClientService, CONTACTS_DEFAULT_COLS
+from json_parser import FlattenJsonParser
 
 ENGAGEMENT_ASSOC_COLS = ["contactIds",
                          "companyIds",
@@ -204,6 +205,16 @@ class Component(ComponentBase):
             logging.info('Extracting Meetings HubSpot CRM')
             self._dowload_crm_v3_object(client_service, 'meetings',
                                         properties=self._parse_props(params.get('meeting_properties', [])))
+        if 'forms' in endpoints:
+            logging.info('Extracting Forms HubSpot CRM')
+            parser = FlattenJsonParser(child_separator='__', exclude_fields=['displayOptions'],
+                                       keys_to_ignore=['fieldGroups'])
+            self._download_v3_parsed(client_service.get_forms, parser, 'forms')
+
+        if 'marketing_email_statistics' in endpoints:
+            logging.info('Extracting marketing_email_statistics HubSpot')
+            parser = FlattenJsonParser(child_separator='__', exclude_fields=['smartEmailFields'])
+            self._download_v3_parsed(client_service.get_email_statistics, parser, 'marketing_email_statistics')
 
         self._close_files()
 
@@ -492,6 +503,24 @@ class Component(ComponentBase):
             for row in res:
                 counter += 1
                 self.output_object_dict(row, result_path, header_columns)
+
+        if counter > 0:
+            self.write_manifest(result_table)
+
+    def _download_v3_parsed(self, method, parser: FlattenJsonParser, object_name: str, **kwargs):
+        result_table = self.create_out_table_definition(f'{object_name}.csv', incremental=self.incremental,
+                                                        primary_key=['id'])
+        result_path = result_table.full_path
+        header_columns = self._object_schemas.get(result_path, ['id'])
+
+        counter = 0
+        for res in method(**kwargs):
+            if counter % 500 == 0:
+                logging.info(f"Downloaded {counter} records.")
+            for row in res:
+                parsed_row = parser.parse_row(row)
+                counter += 1
+                self.output_object_dict(parsed_row, result_path, header_columns)
 
         if counter > 0:
             self.write_manifest(result_table)
