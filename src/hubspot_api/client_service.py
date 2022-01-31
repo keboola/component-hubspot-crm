@@ -182,7 +182,7 @@ class HubspotClientService(HttpClient):
             resp_text = str.encode(req.text, 'utf-8')
             req_response = json.loads(resp_text)
 
-            if req_response.get(has_more_attr):
+            if req_response.get(has_more_attr) or not req_response.get(res_obj_name):
                 has_more = True
                 offset = req_response[offset_resp_attr]
             else:
@@ -479,5 +479,15 @@ class HubspotClientService(HttpClient):
 
         return [final_df]
 
+    def get_email_statistics(self, include_inactive=True):
+
+        resp = self._get_paged_result_pages_dict('marketing-emails/v1/emails/with-statistics', {}, 'objects', 'limit',
+                                                 'offset', 'offset', 'hasmore', 0, 300)
+
+        return resp
+
     def get_v3_engagement_object(self, object_type: str, properties: List[str] = None):
         return self._client_v3.get_engagement_object(object_type, properties)
+
+    def get_forms(self):
+        return self._client_v3.get_forms()
