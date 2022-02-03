@@ -213,7 +213,8 @@ class Component(ComponentBase):
 
         if 'marketing_email_statistics' in endpoints:
             logging.info('Extracting marketing_email_statistics HubSpot')
-            parser = FlattenJsonParser(child_separator='__', exclude_fields=['smartEmailFields', 'styleSettings'])
+            parser = FlattenJsonParser(child_separator='__', exclude_fields=['smartEmailFields'],
+                                       keys_to_ignore=['styleSettings'])
             self._download_v3_parsed(client_service.get_email_statistics, parser, 'marketing_email_statistics')
 
         self._close_files()
