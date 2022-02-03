@@ -7,6 +7,7 @@
     "endpoints",
     "company_properties",
     "contact_properties",
+    "include_contact_list_membership",
     "deal_properties",
     "property_attributes",
     "incremental_output"
@@ -213,6 +214,13 @@
       "description": "Comma separated list of contact properties. The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched.",
       "uniqueItems": true,
       "propertyOrder": 600
+    },
+    "include_contact_list_membership": {
+      "type": "boolean",
+      "title": "Include contact list memberships",
+      "default": true,
+      "description": "If true, list memberships will be downloaded for each contact stored in contact_lists table -> may lead to longer download times and large data",
+      "propertyOrder": 510
     },
     "call_properties": {
       "type": "string",
