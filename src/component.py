@@ -175,7 +175,7 @@ class Component(ComponentBase):
         if 'contacts' in endpoints:
             logging.info('Extracting Contacts from HubSpot CRM')
             self.get_contacts(client_service, start_date, self._parse_props(params.get(KEY_CONTACT_PROPERTIES)),
-                              property_attributes)
+                              property_attributes, params.get('include_contact_list_membership', True))
 
         if 'deals' in endpoints:
             logging.info('Extracting Deals from HubSpot CRM')
@@ -244,11 +244,12 @@ class Component(ComponentBase):
                                               columns=cleaned_columns)
 
     # CONTACTS
-    def get_contacts(self, client: HubspotClientService, start_time, fields, property_attributes):
+    def get_contacts(self, client: HubspotClientService, start_time, fields, property_attributes,
+                     include_membership: True):
         res_file_path = os.path.join(self.tables_out_path, 'contacts.csv')
         res_columns = []
         counter = 0
-        for res in client.get_contacts(property_attributes, start_time, fields):
+        for res in client.get_contacts(property_attributes, start_time, fields, include_membership):
             counter += 1
             if len(res.columns.values) == 0:
                 logging.info("No contact records for specified period.")

@@ -264,7 +264,8 @@ class HubspotClientService(HttpClient):
         if http_error_msg:
             raise RuntimeError(http_error_msg)
 
-    def get_contacts(self, property_attributes, start_time=None, fields=None) -> Iterable:
+    def get_contacts(self, property_attributes, start_time=None, fields=None,
+                     show_list_membership: bool = True) -> Iterable:
         """
         Get either all available contacts or recent ones specified by start_time.
 
@@ -283,7 +284,8 @@ class HubspotClientService(HttpClient):
             contact_properties = fields
             expected_contact_cols = CONTACTS_DEFAULT_COLS + self._build_property_cols(fields, property_attributes)
 
-        parameters = {'property': contact_properties, 'formSubmissionMode': 'all', 'showListMemberships': 'true'}
+        parameters = {'property': contact_properties, 'formSubmissionMode': 'all',
+                      'showListMemberships': show_list_membership}
 
         # hubspot_api api allows only 30 days back, get all data if larger
         if start_time and (datetime.utcnow() - start_time).days >= 30:
