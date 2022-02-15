@@ -104,6 +104,10 @@ class Component(ComponentBase):
         state = self.get_state_file() or {}
         self._object_schemas: dict = state.get('table_schemas', {})
 
+        # If _object_schemas is empty list [], then it will stay a list instead of being a dict.
+        if not self._object_schemas:
+            self._object_schemas = {}
+
         self._writer_cache: Dict[str, ElasticDictWriter] = {}
 
     def run(self):
