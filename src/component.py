@@ -292,7 +292,7 @@ class Component(ComponentBase):
         result_table = self.create_out_table_definition('object_associations.csv', incremental=self.incremental,
                                                         primary_key=['from_id', 'from_type', 'to_id', 'to_type'])
         result_row = {}
-        header = ['from_id'
+        header = ['from_id',
                   'from_type',
                   'to_id',
                   'to_type',
