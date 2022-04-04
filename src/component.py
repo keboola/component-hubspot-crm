@@ -102,7 +102,7 @@ class Component(ComponentBase):
 
         self.incremental = self.configuration.parameters.get(KEY_INCR_OUT)
         state = self.get_state_file() or {}
-        self._object_schemas: dict = state.get('table_schemas', {})
+        self._object_schemas: dict = state.get('table_schemas') or {}
 
         self._writer_cache: Dict[str, ElasticDictWriter] = {}
 
