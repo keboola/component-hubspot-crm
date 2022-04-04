@@ -302,7 +302,7 @@ class HubspotClientService(HttpClient):
                                                 'vid-offset', 'has-more', offset, 100,
                                                 default_cols=expected_contact_cols)
 
-    def get_companies(self, property_attributes, recent=False, fields=None):
+    def get_companies(self, property_attributes, recent=None, fields=None):
 
         offset = 0
         if not fields:
@@ -314,6 +314,15 @@ class HubspotClientService(HttpClient):
             expected_company_cols = COMPANIES_DEFAULT_COLS + self._build_property_cols(fields, property_attributes)
 
         parameters = {'properties': company_properties}
+
+        if property_attributes['include_versions']:
+            parameters['propertiesWithHistory'] = company_properties
+
+        # # hubspot_api api allows only 30 days back, get all data if larger
+        # if start_time and (datetime.utcnow() - start_time).days >= 30:
+        #     recent = False
+        # else:
+        #     recent = True
 
         if recent:
             return self._get_paged_result_pages(COMPANIES_RECENT, parameters, 'results', 'count', 'offset',
