@@ -8,6 +8,7 @@
     "company_properties",
     "contact_properties",
     "include_contact_list_membership",
+    "download_contact_associations",
     "deal_properties",
     "property_attributes",
     "incremental_output"
@@ -222,6 +223,42 @@
       "description": "If true, list memberships will be downloaded for each contact stored in contact_lists table -> may lead to longer download times and large data",
       "propertyOrder": 610
     },
+    "download_contact_associations": {
+      "type": "boolean",
+      "title": "Fetch contact associations",
+      "descriptions": "Fetch associations in case there are multiple associated objects. [BETA API]",
+      "default": false,
+      "propertyOrder": 611
+    },
+    "contact_associations": {
+      "type": "array",
+      "title": "Property additional attributes",
+      "description": "Fetch associations in case there are multiple associated objects. [BETA API]",
+      "options": {
+        "dependencies": {
+          "download_contact_associations": true
+        },
+        "minItems": 1
+      },
+      "default": "company",
+      "format": "grid",
+      "propertyOrder": 615,
+      "items": {
+        "type": "object",
+        "title": "Association type",
+        "required": [
+          "to_object_type"
+        ],
+        "properties": {
+          "to_object_type": {
+            "type": "string",
+            "title": "To object type",
+            "default": "company",
+            "propertyOrder": 1
+          }
+        }
+      }
+    },
     "call_properties": {
       "type": "string",
       "title": "Call additional properties (if selected)",
@@ -232,7 +269,7 @@
       },
       "description": "Comma separated list of call properties. The values must match valid company properties, otherwise an empty value is returned. If left empty, default properties will be fetched.",
       "uniqueItems": true,
-      "propertyOrder": 610
+      "propertyOrder": 618
     },
     "email_properties": {
       "type": "string",

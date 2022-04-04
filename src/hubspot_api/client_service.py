@@ -502,3 +502,16 @@ class HubspotClientService(HttpClient):
 
     def get_forms(self):
         return self._client_v3.get_forms()
+
+    def get_associations(self, from_object_type: str, to_object_type: str, ids: List[str]):
+        """
+
+               Args:
+                   from_object_type: e.g. company, contact
+                   to_object_type: e.g. company, contact
+                   ids: List of IDs of from_object type
+
+               Returns: Result as dict
+
+               """
+        return self._client_v3.get_associations(from_object_type, to_object_type, ids)

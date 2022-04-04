@@ -44,7 +44,7 @@ class ClientV3(HttpClient):
         HttpClient.__init__(self, base_url=BASE_URL, max_retries=MAX_RETRIES, backoff_factor=0.3,
                             status_forcelist=(429, 500, 502, 504), default_params={"hapikey": token})
 
-    def _get_paged_result_pages(self, endpoint, parameters, limit=100, default_cols=None):
+    def _get_paged_result_pages(self, endpoint, parameters, limit=100, default_cols=None) -> Iterator[List[dict]]:
 
         has_more = True
         while has_more:
@@ -94,7 +94,7 @@ class ClientV3(HttpClient):
         if http_error_msg:
             raise RuntimeError(http_error_msg)
 
-    def get_forms(self, archived: bool = False, form_types: List[str] = None) -> Iterator[List[str]]:
+    def get_forms(self, archived: bool = False, form_types: List[str] = None) -> Iterator[List[dict]]:
         request_params = {"archived": archived}
         if form_types:
             form_types_str = ','.join(form_types)
@@ -124,3 +124,22 @@ class ClientV3(HttpClient):
             request_params['properties'] = properties_str
 
         return self._get_paged_result_pages(f'crm/v3/objects/{object_type}', request_params)
+
+    def get_associations(self, from_object_type: str, to_object_type: str, ids: List[str]) -> dict:
+        """
+
+        Args:
+            from_object_type: e.g. company, contact
+            to_object_type: e.g. company, contact
+            ids: List of IDs of from_object type
+
+        Returns: Result as dict
+
+        """
+        body = {'inputs': [{"id": id_value for id_value in ids}]}
+
+        resp = self.post_raw(f'/crm/v4/associations/{from_object_type}/{to_object_type}/batch/read', json=body)
+
+        resp.raise_for_status()
+
+        return resp.json()['results']
