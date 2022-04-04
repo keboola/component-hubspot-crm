@@ -599,6 +599,7 @@ class Component(ComponentBase):
     def _close_files(self):
         for key, f in self._writer_cache.items():
             f.close()
+            logging.debug(self._object_schemas)
             self._object_schemas[key] = f.fieldnames
 
         self.write_state_file({"table_schemas": self._object_schemas})
