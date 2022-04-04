@@ -250,7 +250,7 @@ class Component(ComponentBase):
         res_columns = []
         counter = 0
         for res in client.get_contacts(property_attributes, start_time, fields, include_membership):
-            counter += 1
+            counter += 100
             if len(res.columns.values) == 0:
                 logging.info("No contact records for specified period.")
                 continue
