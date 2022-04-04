@@ -292,6 +292,11 @@ class Component(ComponentBase):
         result_table = self.create_out_table_definition('object_associations.csv', incremental=self.incremental,
                                                         primary_key=['from_id', 'from_type', 'to_id', 'to_type'])
         result_row = {}
+        header = ['from_id'
+                  'from_type',
+                  'to_id',
+                  'to_type',
+                  'association_types']
         for row in data:
             for association in row['to']:
                 result_row['from_id'] = row['from']['id']
@@ -299,7 +304,7 @@ class Component(ComponentBase):
                 result_row['to_id'] = association['toObjectId']
                 result_row['to_type'] = to_type
                 result_row['association_types'] = association['associationTypes']
-                self.output_object_dict(result_row, result_table.full_path, list(result_row.keys()))
+                self.output_object_dict(result_row, result_table.full_path, header)
 
         if data:
             self.write_manifest(result_table)
