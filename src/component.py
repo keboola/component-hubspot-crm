@@ -7,7 +7,7 @@ import logging
 import os
 import sys
 import warnings
-from typing import Dict
+from typing import Dict, List
 
 import keboola.csvwriter
 import keboola.utils as kbcutils
@@ -254,6 +254,10 @@ class Component(ComponentBase):
             if len(res.columns.values) == 0:
                 logging.info("No contact records for specified period.")
                 continue
+
+            if self.configuration.parameters.get('contact_associations'):
+                self._download_contact_associations(client, res)
+
             if 'form-submissions' in res.columns or 'list-memberships' in res.columns:
                 self._store_contact_submission_and_list(res)
                 res.drop(['form-submissions', 'list-memberships'], 1, inplace=True, errors='ignore')
@@ -277,6 +281,28 @@ class Component(ComponentBase):
             self._write_table_manifest_legacy(file_name=res_file_path, primary_key=CONTACT_PK,
                                               incremental=self.incremental,
                                               columns=cl_cols)
+
+    def _download_contact_associations(self, client: HubspotClientService, result: pd.DataFrame):
+        vids = result['vid'].tolist()
+        for ass in self.configuration.parameters['contact_associations']:
+            results = client.get_associations('contact', ass['to_object_type'], vids)
+            self._write_associations('contact', ass['to_object_type'], results)
+
+    def _write_associations(self, from_type: str, to_type: str, data: List[dict]):
+        result_table = self.create_out_table_definition('object_associations.csv', incremental=self.incremental,
+                                                        primary_key=['from_id', 'from_type', 'to_id', 'to_type'])
+        result_row = {}
+        for row in data:
+            for association in row['to']:
+                result_row['from_id'] = row['from']['id']
+                result_row['from_type'] = from_type
+                result_row['to_id'] = association['toObjectId']
+                result_row['to_type'] = to_type
+                result_row['association_types'] = association['associationTypes']
+                self.output_object_dict(result_row, result_table.full_path, list(result_row.keys()))
+
+        if data:
+            self.write_manifest(result_table)
 
     def _drop_duplicate_properties(self, df, property_names: list):
         columns = list(df.columns.values)
