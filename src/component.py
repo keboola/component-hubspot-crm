@@ -456,9 +456,10 @@ class Component(ComponentBase):
                 comp_list = pd.DataFrame(row['associations.associatedCompanyIds'],
                                          columns=['associated_companyId'])
                 comp_list['dealId'] = row['dealId']
+                logging.debug(f'{list(comp_list.columns.values)}')
                 self.output_file(comp_list, companies_lists_path, comp_list.columns)
                 if not comp_list_cols:
-                    comp_list_cols = list(comp_list.columns.values)
+                    comp_list_cols = ["associated_companyId", "dealId"]
 
             if row.get('associations.associatedDealIds') and len(row['associations.associatedDealIds']) != 0:
                 ass_deal_list = pd.DataFrame(row['associations.associatedDealIds'],
