@@ -678,5 +678,9 @@ if __name__ == "__main__":
         logging.exception(Exception(F'Invalid Key value:{e}'))
         exit(2)
     except Exception as e:
+        detail = ''
+        if len(e.args) > 1:
+            detail = e.args[1]
+        logging.exception(e, extra={"full_message": detail})
         logging.exception(e)
         exit(1)

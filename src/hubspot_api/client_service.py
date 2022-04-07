@@ -262,7 +262,7 @@ class HubspotClientService(HttpClient):
             http_error_msg = u'Request to %s failed %s Client Error: %s' % (endpoint, response.status_code, reason)
 
         if http_error_msg:
-            raise RuntimeError(http_error_msg)
+            raise RuntimeError(http_error_msg, response.text)
 
     def get_contacts(self, property_attributes, start_time=None, fields=None,
                      show_list_membership: bool = True) -> Iterable:
