@@ -289,6 +289,7 @@ class Component(ComponentBase):
     def _download_contact_associations(self, client: HubspotClientService, result: pd.DataFrame):
         vids = result['vid'].tolist()
         for ass in self.configuration.parameters['contact_associations']:
+            logging.debug(f"Get associations for {vids}")
             results = client.get_associations('contact', ass['to_object_type'], vids)
             self._write_associations('contact', ass['to_object_type'], results)
 
