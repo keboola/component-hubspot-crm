@@ -136,7 +136,7 @@ class ClientV3(HttpClient):
         Returns: Result as dict
 
         """
-        body = {'inputs': [{"id": id_value for id_value in ids}]}
+        body = {'inputs': [{"id": id_value} for id_value in ids]}
 
         resp = self.post_raw(f'/crm/v4/associations/{from_object_type}/{to_object_type}/batch/read', json=body)
 
