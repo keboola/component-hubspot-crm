@@ -8,7 +8,6 @@
     "company_properties",
     "contact_properties",
     "include_contact_list_membership",
-    "download_contact_associations",
     "deal_properties",
     "property_attributes",
     "incremental_output"
