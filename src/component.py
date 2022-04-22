@@ -430,7 +430,7 @@ class Component(ComponentBase):
         deal_lists_path = os.path.join(self.tables_out_path, 'deals_assoc_deals_list.csv')
         companies_lists_path = os.path.join(self.tables_out_path, 'deals_assoc_companies_list.csv')
         # Create table with Deals' Stage History & Deals' Contacts List
-        c_list_cols, stage_his_cols, comp_list_cols, ass_deal_list_cols = None, None, None, None
+        c_list_cols, stage_his_cols, ass_deal_list_cols = None, None, None, None
         for index, row in deals.iterrows():
 
             if row.get('properties.dealstage.versions') and str(
@@ -458,8 +458,6 @@ class Component(ComponentBase):
                 comp_list['dealId'] = row['dealId']
                 logging.debug(f'{list(comp_list.columns.values)}')
                 self.output_file(comp_list, companies_lists_path, comp_list.columns)
-                if not comp_list_cols:
-                    comp_list_cols = ["associated_companyId", "dealId"]
 
             if row.get('associations.associatedDealIds') and len(row['associations.associatedDealIds']) != 0:
                 ass_deal_list = pd.DataFrame(row['associations.associatedDealIds'],
@@ -485,7 +483,7 @@ class Component(ComponentBase):
         if os.path.isfile(companies_lists_path):
             self._write_table_manifest_legacy(file_name=companies_lists_path,
                                               primary_key=['dealId', 'associated_companyId'],
-                                              columns=comp_list_cols,
+                                              columns=["associated_companyId", "dealId"],
                                               incremental=self.incremental)
 
     # PIPELINES
