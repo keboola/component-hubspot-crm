@@ -430,7 +430,7 @@ class Component(ComponentBase):
         deal_lists_path = os.path.join(self.tables_out_path, 'deals_assoc_deals_list.csv')
         companies_lists_path = os.path.join(self.tables_out_path, 'deals_assoc_companies_list.csv')
         # Create table with Deals' Stage History & Deals' Contacts List
-        c_list_cols, stage_his_cols, ass_deal_list_cols = None, None, None, None
+        c_list_cols, stage_his_cols, ass_deal_list_cols = None, None, None
         for index, row in deals.iterrows():
 
             if row.get('properties.dealstage.versions') and str(
