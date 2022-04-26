@@ -132,7 +132,7 @@ class HubspotClientService(HttpClient):
 
     def __init__(self, token):
         HttpClient.__init__(self, base_url=BASE_URL, max_retries=MAX_RETRIES, backoff_factor=0.3,
-                            status_forcelist=(429, 500, 502, 504), default_params={"hapikey": token})
+                            status_forcelist=(429, 500, 502, 504, 524), default_params={"hapikey": token})
         self._client_v3 = client_v3.ClientV3(token)
 
     def _get_paged_result_pages(self, endpoint, parameters, res_obj_name, limit_attr, offset_req_attr, offset_resp_attr,

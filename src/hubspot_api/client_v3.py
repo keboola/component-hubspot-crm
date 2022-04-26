@@ -42,7 +42,7 @@ class ClientV3(HttpClient):
 
     def __init__(self, token):
         HttpClient.__init__(self, base_url=BASE_URL, max_retries=MAX_RETRIES, backoff_factor=0.3,
-                            status_forcelist=(429, 500, 502, 504), default_params={"hapikey": token})
+                            status_forcelist=(429, 500, 502, 504, 524), default_params={"hapikey": token})
 
     def _get_paged_result_pages(self, endpoint, parameters, limit=100, default_cols=None) -> Iterator[List[dict]]:
 
