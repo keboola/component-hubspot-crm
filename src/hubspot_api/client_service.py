@@ -2,6 +2,7 @@ import json
 import logging
 from collections.abc import Iterable
 from datetime import datetime
+from json import JSONDecodeError
 from typing import List
 
 import numpy as np
@@ -147,7 +148,10 @@ class HubspotClientService(HttpClient):
             req = self.get_raw(self.base_url + endpoint, params=parameters)
             self._check_http_result(req, endpoint)
             resp_text = str.encode(req.text, 'utf-8')
-            req_response = json.loads(resp_text)
+            try:
+                req_response = json.loads(resp_text)
+            except JSONDecodeError:
+                raise RuntimeError(f'The HS API response is invalid. Status: {req.status_code}. Response: {resp_text}')
 
             if req_response.get(has_more_attr):
                 has_more = True
