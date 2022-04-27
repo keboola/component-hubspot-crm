@@ -225,7 +225,12 @@ class HubspotClientService(HttpClient):
             req = self.get_raw(self.base_url + endpoint, params=parameters)
             self._check_http_result(req, endpoint)
             resp_text = str.encode(req.text, 'utf-8')
-            req_response = json.loads(resp_text)
+            try:
+                req_response = json.loads(resp_text)
+            except JSONDecodeError as e:
+                raise RuntimeError(f'The HS API response is invalid. enpoint: {endpoint}, parameters: {parameters}. '
+                                   f'Status: {req.status_code}. '
+                                   f'Response: {resp_text[:500]}... {e}')
             timeoffset = req_response.get('time-offset', since_time_offset)
 
             if req_response.get('has-more') and timeoffset >= since_time_offset:
