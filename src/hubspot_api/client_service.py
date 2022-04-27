@@ -1,4 +1,3 @@
-import json
 import logging
 from collections.abc import Iterable
 from datetime import datetime
@@ -9,6 +8,7 @@ import numpy as np
 import pandas as pd
 from keboola.http_client import HttpClient
 from pandas import json_normalize
+from requests import Response
 
 from hubspot_api import client_v3
 
@@ -136,6 +136,20 @@ class HubspotClientService(HttpClient):
                             status_forcelist=(429, 500, 502, 504, 524), default_params={"hapikey": token})
         self._client_v3 = client_v3.ClientV3(token)
 
+    def _parse_response_text(self, response: Response, endpoint, parameters) -> dict:
+        try:
+            return response.json()
+        except JSONDecodeError as e:
+            charp = str(e).split('(char ')
+            start_pos = 0
+            if len(charp) == 2:
+                start_pos = int(charp[1].replace(')', '')) - 100
+                if start_pos < 0:
+                    start_pos = 0
+            raise RuntimeError(f'The HS API response is invalid. enpoint: {endpoint}, parameters: {parameters}. '
+                               f'Status: {response.status_code}. '
+                               f'Response: {response.text[start_pos:start_pos + 100]}... {e}')
+
     def _get_paged_result_pages(self, endpoint, parameters, res_obj_name, limit_attr, offset_req_attr, offset_resp_attr,
                                 has_more_attr, offset, limit, default_cols=None):
 
@@ -147,14 +161,7 @@ class HubspotClientService(HttpClient):
 
             req = self.get_raw(self.base_url + endpoint, params=parameters)
             self._check_http_result(req, endpoint)
-            resp_text = str.encode(req.text, 'utf-8')
-            try:
-                req_response = json.loads(resp_text)
-            except JSONDecodeError as e:
-                raise RuntimeError(f'The HS API response is invalid. enpoint: {endpoint}, parameters: {parameters}. '
-                                   f'Status: {req.status_code}. '
-                                   f'Response: {resp_text[:500]}... {e}')
-
+            req_response = self._parse_response_text(req, endpoint, parameters)
             if req_response.get(has_more_attr):
                 has_more = True
                 offset = req_response[offset_resp_attr]
@@ -185,8 +192,7 @@ class HubspotClientService(HttpClient):
 
             req = self.get_raw(self.base_url + endpoint, params=parameters)
             self._check_http_result(req, endpoint)
-            resp_text = str.encode(req.text, 'utf-8')
-            req_response = json.loads(resp_text)
+            req_response = self._parse_response_text(req, endpoint, parameters)
 
             if req_response.get(has_more_attr) or not req_response.get(res_obj_name):
                 has_more = True
@@ -224,13 +230,7 @@ class HubspotClientService(HttpClient):
 
             req = self.get_raw(self.base_url + endpoint, params=parameters)
             self._check_http_result(req, endpoint)
-            resp_text = str.encode(req.text, 'utf-8')
-            try:
-                req_response = json.loads(resp_text)
-            except JSONDecodeError as e:
-                raise RuntimeError(f'The HS API response is invalid. enpoint: {endpoint}, parameters: {parameters}. '
-                                   f'Status: {req.status_code}. '
-                                   f'Response: {resp_text[:500]}... {e}')
+            req_response = self._parse_response_text(req, endpoint, parameters)
             timeoffset = req_response.get('time-offset', since_time_offset)
 
             if req_response.get('has-more') and timeoffset >= since_time_offset:
