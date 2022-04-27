@@ -151,7 +151,8 @@ class HubspotClientService(HttpClient):
             try:
                 req_response = json.loads(resp_text)
             except JSONDecodeError as e:
-                raise RuntimeError(f'The HS API response is invalid. Status: {req.status_code}. '
+                raise RuntimeError(f'The HS API response is invalid. enpoint: {endpoint}, parameters: {parameters}. '
+                                   f'Status: {req.status_code}. '
                                    f'Response: {resp_text[:500]}... {e}')
 
             if req_response.get(has_more_attr):
