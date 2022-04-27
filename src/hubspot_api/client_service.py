@@ -151,7 +151,8 @@ class HubspotClientService(HttpClient):
             try:
                 req_response = json.loads(resp_text)
             except JSONDecodeError:
-                raise RuntimeError(f'The HS API response is invalid. Status: {req.status_code}. Response: {resp_text}')
+                raise RuntimeError(f'The HS API response is invalid. Status: {req.status_code}. '
+                                   f'Response: {resp_text[:500]}...')
 
             if req_response.get(has_more_attr):
                 has_more = True
@@ -332,7 +333,7 @@ class HubspotClientService(HttpClient):
             return self._get_paged_result_pages(COMPANIES_RECENT, parameters, 'results', 'count', 'offset',
                                                 'offset',
                                                 'hasMore',
-                                                offset, 200, default_cols=expected_company_cols)
+                                                offset, 1000, default_cols=expected_company_cols)
         else:
             return self._get_paged_result_pages(COMPANIES_ALL, parameters, 'companies', 'limit', 'offset',
                                                 'offset',
