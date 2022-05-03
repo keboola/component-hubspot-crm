@@ -194,7 +194,7 @@ class HubspotClientService(HttpClient):
             self._check_http_result(req, endpoint)
             req_response = self._parse_response_text(req, endpoint, {offset_req_attr: offset, limit_attr: limit})
 
-            if req_response.get(has_more_attr) or not req_response.get(res_obj_name):
+            if req_response.get(has_more_attr) or req_response.get(res_obj_name):
                 has_more = True
                 offset = req_response[offset_resp_attr]
             else:
