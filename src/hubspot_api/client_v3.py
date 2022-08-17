@@ -40,9 +40,22 @@ class EngagementObjects(Enum):
 
 class ClientV3(HttpClient):
 
-    def __init__(self, token):
+    def __init__(self, token, authentication_type):
+        """
+
+        Args:
+            token:
+            authentication_type: "API Key" or "Private App Token"
+        """
+        if authentication_type == "API Key":
+            default_params = {"hapikey": token}
+            auth_header = {}
+        else:
+            default_params = {}
+            auth_header = {'Authorization': f'Bearer {token}'}
         HttpClient.__init__(self, base_url=BASE_URL, max_retries=MAX_RETRIES, backoff_factor=0.3,
-                            status_forcelist=(429, 500, 502, 504, 524), default_params={"hapikey": token})
+                            status_forcelist=(429, 500, 502, 504, 524), default_params=default_params,
+                            auth_header=auth_header)
 
     def _get_paged_result_pages(self, endpoint, parameters, limit=100, default_cols=None) -> Iterator[List[dict]]:
 
@@ -72,6 +85,7 @@ class ClientV3(HttpClient):
 
     def _check_http_result(self, response, endpoint):
         http_error_msg = ''
+        error_detail = ''
         if isinstance(response.reason, bytes):
             # We attempt to decode utf-8 first because some servers
             # choose to localize their reason strings. If the string
@@ -79,17 +93,23 @@ class ClientV3(HttpClient):
             # encodings. (See PR #3538)
             try:
                 reason = response.reason.decode('utf-8')
+
             except UnicodeDecodeError:
                 reason = response.reason.decode('iso-8859-1')
         else:
             reason = response.reason
+
+        if response.status_code >= 400:
+            error_detail = response.json()['message'] + f' Errors: {response.json()["errors"]}'
         if 401 == response.status_code:
-            http_error_msg = u'Failed to login: %s - Please check your API token' % (reason)
+            http_error_msg = f'Failed to login: {reason} - Please check your API token'
         elif 401 < response.status_code < 500:
-            http_error_msg = u'Request to %s failed %s Client Error: %s' % (endpoint, response.status_code, reason)
+            http_error_msg = f'Request to {endpoint} failed {response.status_code} Client Error: {reason} ' \
+                             f'Detail: {error_detail}'
 
         elif 500 <= response.status_code < 600:
-            http_error_msg = u'Request to %s failed %s Client Error: %s' % (endpoint, response.status_code, reason)
+            http_error_msg = f'Request to {endpoint} failed {response.status_code} Client Error: {reason} ' \
+                             f'Detail: {error_detail}'
 
         if http_error_msg:
             raise RuntimeError(http_error_msg)

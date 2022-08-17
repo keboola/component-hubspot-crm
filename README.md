@@ -8,7 +8,36 @@ KBC Component for data retrieval from [Hubspot API](https://developers.hubspot.c
 
 # Configuration
 
+## Authentication
+
+This component supports also legacy API Key authentication that is being deprecated completely
+since [30 November 2022](https://developers.hubspot.com/changelog/upcoming-api-key-sunset)
+
+You need to create
+a [Private App](https://developers.hubspot.com/docs/api/migrate-an-api-key-integration-to-a-private-app) in your account
+and enable all following scopes:
+![scopes](docs/imgs/scopes.png)
+
+### Authentication Method
+
+Two methods supported:
+
+- `Private App Token`
+- `API Key`
+
+Please use the `Private App Token` in all cases.
+
+### Private App Token
+[REQ] 
+Create a [Private App](https://developers.hubspot.com/docs/api/migrate-an-api-key-integration-to-a-private-app) in your
+account and enable all following scopes:
+![scopes](docs/imgs/scopes.png)
+
+Then use the generated token.
+
 ### **API token**
+
+ **NOTE that this method is deprecated since Nov 22**
 
 [REQ] Your Hubspot API token, for more information see
 here ([how-do-i-get-my-hubspot-api-key](https://knowledge.hubspot.com/articles/kcs_article/integrations/how-do-i-get-my-hubspot-api-key))
@@ -47,8 +76,8 @@ List of endpoints to download. Currently supported are:
 - [Calls](https://developers.hubspot.com/docs/api/crm/calls) - engagement calls
 - [Emails](https://developers.hubspot.com/docs/api/crm/emails) - engagement emails
 - [Forms](https://developers.hubspot.com/docs/api/marketing/forms) - Marketing api Forms
-- [Marketing Emails Statistics](https://legacydocs.hubspot.com/docs/methods/cms_email/get-all-marketing-email-statistics) - CMS Marketing Emails Statistics
-
+- [Marketing Emails Statistics](https://legacydocs.hubspot.com/docs/methods/cms_email/get-all-marketing-email-statistics)
+  - CMS Marketing Emails Statistics
 
 For more info see the **Supported endpoints** section
 
@@ -140,7 +169,8 @@ this is set by `Date From` parameter. In most of the cases maximum of last 30 da
 - [Calls](https://developers.hubspot.com/docs/api/crm/calls) - engagement calls
 - [Emails](https://developers.hubspot.com/docs/api/crm/emails) - engagement emails
 - [Forms](https://developers.hubspot.com/docs/api/marketing/forms) - Marketing api Forms
-- [Marketing Emails Statistics](https://legacydocs.hubspot.com/docs/methods/cms_email/get-all-marketing-email-statistics) - CMS Marketing Emails Statistics
+- [Marketing Emails Statistics](https://legacydocs.hubspot.com/docs/methods/cms_email/get-all-marketing-email-statistics)
+  - CMS Marketing Emails Statistics
 
 ## Companies
 
@@ -257,7 +287,9 @@ NOTE: Fetches max 30 day period, larger periods are cut to match the limit.
 
 [All Activities](https://developers.hubspot.com/docs/methods/engagements/get-all-engagements) or   
 [recently modified (max last 30 days) ](https://developers.hubspot.com/docs/methods/engagements/get-recent-engagements)
--   
+
+-
+
 possible to limit by `Date From` parameter.
 
 NOTE: Fetches max 30 day period, larger periods are cut to match the limit.

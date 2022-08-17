@@ -131,10 +131,24 @@ COMPANY_PROPERTIES = 'properties/v1/companies/properties/'
 
 class HubspotClientService(HttpClient):
 
-    def __init__(self, token):
+    def __init__(self, token, authentication_type: str = "API Key"):
+        """
+
+        Args:
+            token:
+            authentication_type: "API Key" or "Private App Token"
+        """
+        if authentication_type == "API Key":
+            default_params = {"hapikey": token}
+            auth_header = {}
+        else:
+            default_params = {}
+            auth_header = {'Authorization': f'Bearer {token}'}
+
         HttpClient.__init__(self, base_url=BASE_URL, max_retries=MAX_RETRIES, backoff_factor=0.3,
-                            status_forcelist=(429, 500, 502, 504, 524), default_params={"hapikey": token})
-        self._client_v3 = client_v3.ClientV3(token)
+                            status_forcelist=(429, 500, 502, 504, 524), default_params=default_params,
+                            auth_header=auth_header)
+        self._client_v3 = client_v3.ClientV3(token, authentication_type)
 
     def _parse_response_text(self, response: Response, endpoint, parameters) -> dict:
         try:
@@ -146,7 +160,7 @@ class HubspotClientService(HttpClient):
                 start_pos = int(charp[1].replace(')', '')) - 100
                 if start_pos < 0:
                     start_pos = 0
-            raise RuntimeError(f'The HS API response is invalid. enpoint: {endpoint}, position: {parameters}. '
+            raise RuntimeError(f'The HS API response is invalid. enpoint: {endpoint}, parameters: {parameters}. '
                                f'Status: {response.status_code}. '
                                f'Response: {response.text[start_pos:start_pos + 100]}... {e}')
 
@@ -161,7 +175,7 @@ class HubspotClientService(HttpClient):
 
             req = self.get_raw(self.base_url + endpoint, params=parameters)
             self._check_http_result(req, endpoint)
-            req_response = self._parse_response_text(req, endpoint, {offset_req_attr: offset, limit_attr: limit})
+            req_response = self._parse_response_text(req, endpoint, parameters)
             if req_response.get(has_more_attr):
                 has_more = True
                 offset = req_response[offset_resp_attr]
@@ -192,9 +206,9 @@ class HubspotClientService(HttpClient):
 
             req = self.get_raw(self.base_url + endpoint, params=parameters)
             self._check_http_result(req, endpoint)
-            req_response = self._parse_response_text(req, endpoint, {offset_req_attr: offset, limit_attr: limit})
+            req_response = self._parse_response_text(req, endpoint, parameters)
 
-            if req_response.get(has_more_attr) and req_response.get(res_obj_name):
+            if req_response.get(has_more_attr) or not req_response.get(res_obj_name):
                 has_more = True
                 offset = req_response[offset_resp_attr]
             else:
@@ -230,7 +244,7 @@ class HubspotClientService(HttpClient):
 
             req = self.get_raw(self.base_url + endpoint, params=parameters)
             self._check_http_result(req, endpoint)
-            req_response = self._parse_response_text(req, endpoint, {'timeOffset': timeoffset, 'count': limit})
+            req_response = self._parse_response_text(req, endpoint, parameters)
             timeoffset = req_response.get('time-offset', since_time_offset)
 
             if req_response.get('has-more') and timeoffset >= since_time_offset:
@@ -504,7 +518,7 @@ class HubspotClientService(HttpClient):
     def get_email_statistics(self, include_inactive=True):
 
         resp = self._get_paged_result_pages_dict('marketing-emails/v1/emails/with-statistics', {}, 'objects', 'limit',
-                                                 'offset', 'offset', 'hasmore', 0, 250)
+                                                 'offset', 'offset', 'hasmore', 0, 300)
 
         return resp
 
