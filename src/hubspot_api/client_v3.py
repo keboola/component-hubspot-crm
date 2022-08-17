@@ -85,6 +85,7 @@ class ClientV3(HttpClient):
 
     def _check_http_result(self, response, endpoint):
         http_error_msg = ''
+        error_detail = ''
         if isinstance(response.reason, bytes):
             # We attempt to decode utf-8 first because some servers
             # choose to localize their reason strings. If the string
@@ -92,17 +93,23 @@ class ClientV3(HttpClient):
             # encodings. (See PR #3538)
             try:
                 reason = response.reason.decode('utf-8')
+
             except UnicodeDecodeError:
                 reason = response.reason.decode('iso-8859-1')
         else:
             reason = response.reason
+
+        if response.status_code >= 400:
+            error_detail = response.json()['message'] + f' Errors: {response.json()["errors"]}'
         if 401 == response.status_code:
-            http_error_msg = u'Failed to login: %s - Please check your API token' % (reason)
+            http_error_msg = f'Failed to login: {reason} - Please check your API token'
         elif 401 < response.status_code < 500:
-            http_error_msg = u'Request to %s failed %s Client Error: %s' % (endpoint, response.status_code, reason)
+            http_error_msg = f'Request to {endpoint} failed {response.status_code} Client Error: {reason} ' \
+                             f'Detail: {error_detail}'
 
         elif 500 <= response.status_code < 600:
-            http_error_msg = u'Request to %s failed %s Client Error: %s' % (endpoint, response.status_code, reason)
+            http_error_msg = f'Request to {endpoint} failed {response.status_code} Client Error: {reason} ' \
+                             f'Detail: {error_detail}'
 
         if http_error_msg:
             raise RuntimeError(http_error_msg)
