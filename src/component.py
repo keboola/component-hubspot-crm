@@ -535,7 +535,7 @@ class Component(ComponentBase):
         counter = 0
         for res in client.get_v3_engagement_object(object_name, **kwargs):
             if counter % 500 == 0:
-                logging.info(f"Downloaded {counter} records.")
+                logging.info(f"Downloaded {counter} records of {object_name}.")
             for row in res:
                 counter += 1
                 self.output_object_dict(row, result_path, header_columns)
@@ -552,7 +552,7 @@ class Component(ComponentBase):
         counter = 0
         for res in method(**kwargs):
             if counter % 500 == 0:
-                logging.info(f"Downloaded {counter} records.")
+                logging.info(f"Downloaded {counter} records of {object_name}.")
             for row in res:
                 parsed_row = parser.parse_row(row)
                 counter += 1

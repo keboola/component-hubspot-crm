@@ -146,7 +146,7 @@ class HubspotClientService(HttpClient):
                 start_pos = int(charp[1].replace(')', '')) - 100
                 if start_pos < 0:
                     start_pos = 0
-            raise RuntimeError(f'The HS API response is invalid. enpoint: {endpoint}, position: {parameters}. '
+            raise RuntimeError(f'The HS API response is invalid. enpoint: {endpoint}, parameters: {parameters}. '
                                f'Status: {response.status_code}. '
                                f'Response: {response.text[start_pos:start_pos + 100]}... {e}')
 
@@ -161,7 +161,7 @@ class HubspotClientService(HttpClient):
 
             req = self.get_raw(self.base_url + endpoint, params=parameters)
             self._check_http_result(req, endpoint)
-            req_response = self._parse_response_text(req, endpoint, {offset_req_attr: offset, limit_attr: limit})
+            req_response = self._parse_response_text(req, endpoint, parameters)
             if req_response.get(has_more_attr):
                 has_more = True
                 offset = req_response[offset_resp_attr]
@@ -192,9 +192,9 @@ class HubspotClientService(HttpClient):
 
             req = self.get_raw(self.base_url + endpoint, params=parameters)
             self._check_http_result(req, endpoint)
-            req_response = self._parse_response_text(req, endpoint, {offset_req_attr: offset, limit_attr: limit})
+            req_response = self._parse_response_text(req, endpoint, parameters)
 
-            if req_response.get(has_more_attr) or req_response.get(res_obj_name):
+            if req_response.get(has_more_attr) or not req_response.get(res_obj_name):
                 has_more = True
                 offset = req_response[offset_resp_attr]
             else:
@@ -230,7 +230,7 @@ class HubspotClientService(HttpClient):
 
             req = self.get_raw(self.base_url + endpoint, params=parameters)
             self._check_http_result(req, endpoint)
-            req_response = self._parse_response_text(req, endpoint, {'timeOffset': timeoffset, 'count': limit})
+            req_response = self._parse_response_text(req, endpoint, parameters)
             timeoffset = req_response.get('time-offset', since_time_offset)
 
             if req_response.get('has-more') and timeoffset >= since_time_offset:
