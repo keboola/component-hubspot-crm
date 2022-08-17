@@ -115,8 +115,16 @@ class Component(ComponentBase):
         Main execution code
         '''
         params = self.configuration.parameters  # noqa
-        token = params[KEY_API_TOKEN]
-        client_service = HubspotClientService(token)
+
+        authentication_type = params.get("authentication_type", "API Key")
+        if authentication_type == "API Key":
+            token = params[KEY_API_TOKEN]
+        elif authentication_type == "Private App Token":
+            token = params['#private_app_token']
+        else:
+            raise ValueError(f'Invalid authentication type "{authentication_type}"')
+
+        client_service = HubspotClientService(token, authentication_type=authentication_type)
 
         if params.get(KEY_PERIOD_FROM):
             import dateparser
@@ -535,7 +543,7 @@ class Component(ComponentBase):
         counter = 0
         for res in client.get_v3_engagement_object(object_name, **kwargs):
             if counter % 500 == 0:
-                logging.info(f"Downloaded {counter} records of {object_name}.")
+                logging.info(f"Downloaded {counter} records.")
             for row in res:
                 counter += 1
                 self.output_object_dict(row, result_path, header_columns)
@@ -550,9 +558,11 @@ class Component(ComponentBase):
         header_columns = self._object_schemas.get(result_path, ['id'])
 
         counter = 0
+        next_boundary = 500
         for res in method(**kwargs):
             if counter % 500 == 0:
-                logging.info(f"Downloaded {counter} records of {object_name}.")
+                logging.info(f"Downloading records between {counter} and {next_boundary}.")
+                next_boundary = counter + 500
             for row in res:
                 parsed_row = parser.parse_row(row)
                 counter += 1

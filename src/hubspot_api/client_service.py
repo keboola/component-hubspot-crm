@@ -131,10 +131,24 @@ COMPANY_PROPERTIES = 'properties/v1/companies/properties/'
 
 class HubspotClientService(HttpClient):
 
-    def __init__(self, token):
+    def __init__(self, token, authentication_type: str = "API Key"):
+        """
+
+        Args:
+            token:
+            authentication_type: "API Key" or "Private App Token"
+        """
+        if authentication_type == "API Key":
+            default_params = {"hapikey": token}
+            auth_header = {}
+        else:
+            default_params = {}
+            auth_header = {'Authorization': f'Bearer {token}'}
+
         HttpClient.__init__(self, base_url=BASE_URL, max_retries=MAX_RETRIES, backoff_factor=0.3,
-                            status_forcelist=(429, 500, 502, 504, 524), default_params={"hapikey": token})
-        self._client_v3 = client_v3.ClientV3(token)
+                            status_forcelist=(429, 500, 502, 504, 524), default_params=default_params,
+                            auth_header=auth_header)
+        self._client_v3 = client_v3.ClientV3(token, authentication_type)
 
     def _parse_response_text(self, response: Response, endpoint, parameters) -> dict:
         try:
