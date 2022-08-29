@@ -2,7 +2,6 @@
   "type": "object",
   "title": "Configuration",
   "required": [
-    "#api_token",
     "period_from",
     "endpoints",
     "company_properties",
