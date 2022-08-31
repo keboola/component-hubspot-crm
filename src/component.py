@@ -56,7 +56,7 @@ KEY_STDLOG = 'stdlogging'
 SUPPORTED_ENDPOINTS = ['companies', 'campaigns', 'email_events', 'activities', 'lists', 'owners', 'contacts', 'deals',
                        'pipelines']
 
-MANDATORY_PARS = [KEY_API_TOKEN]
+MANDATORY_PARS = []
 MANDATORY_IMAGE_PARS = []
 
 # columns
