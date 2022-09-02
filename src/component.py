@@ -227,7 +227,11 @@ class Component(ComponentBase):
             logging.info('Extracting marketing_email_statistics HubSpot')
             parser = FlattenJsonParser(child_separator='__', exclude_fields=['smartEmailFields'],
                                        keys_to_ignore=['styleSettings'])
-            self._download_v3_parsed(client_service.get_email_statistics, parser, 'marketing_email_statistics')
+            updated_since = None
+            if start_date:
+                updated_since = int(start_date.timestamp() * 1000)
+            self._download_v3_parsed(client_service.get_email_statistics, parser, 'marketing_email_statistics',
+                                     updated_since=updated_since)
 
         self._close_files()
 
@@ -563,9 +567,9 @@ class Component(ComponentBase):
             if counter % 500 == 0:
                 logging.info(f"Downloading records between {counter} and {next_boundary}.")
                 next_boundary = counter + 500
+                counter += 1
             for row in res:
                 parsed_row = parser.parse_row(row)
-                counter += 1
                 self.output_object_dict(parsed_row, result_path, header_columns)
 
         if counter > 0:
