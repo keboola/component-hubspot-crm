@@ -563,16 +563,18 @@ class Component(ComponentBase):
 
         counter = 0
         next_boundary = 500
+        total_rows = 0
         for res in method(**kwargs):
             if counter % 500 == 0:
                 logging.info(f"Downloading records between {counter} and {next_boundary}.")
                 next_boundary = counter + 500
                 counter += 1
             for row in res:
+                total_rows = + 1
                 parsed_row = parser.parse_row(row)
                 self.output_object_dict(parsed_row, result_path, header_columns)
 
-        if counter > 0:
+        if total_rows > 0:
             self.write_manifest(result_table)
 
     def output_file(self, data_output, file_output, column_headers):
