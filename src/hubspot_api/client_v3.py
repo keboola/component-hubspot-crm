@@ -2,7 +2,6 @@ import json
 import logging
 from enum import Enum
 from typing import List, Union, Iterator
-from requests.exceptions import ConnectionError
 from keboola.http_client import HttpClient
 
 MAX_RETRIES = 10
