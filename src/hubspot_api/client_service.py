@@ -220,6 +220,10 @@ class HubspotClientService(HttpClient):
             self._check_http_result(req, endpoint)
             req_response = self._parse_response_text(req, endpoint, parameters)
 
+            logging.info(f"limit : {req_response.get('limit')}")
+            logging.info(f"offset : {req_response.get('offset')}")
+            logging.info(f"total : {req_response.get('total')}")
+            logging.info(f"totalCount : {req_response.get('totalCount')}")
             logging.info(f"res_obj_name : {req_response.get(res_obj_name)}")
             logging.info(f"Has more : {req_response.get(has_more_attr)}")
 
