@@ -204,8 +204,7 @@ class HubspotClientService(HttpClient):
             yield final_df
 
     def _get_paged_result_pages_dict(self, endpoint, parameters, res_obj_name, limit_attr, offset_req_attr,
-                                     offset_resp_attr,
-                                     has_more_attr, offset, limit, default_cols=None):
+                                     offset_resp_attr, has_more_attr, offset, limit, default_cols=None):
 
         has_more = True
         while has_more:
@@ -226,10 +225,10 @@ class HubspotClientService(HttpClient):
             logging.info(f"totalCount : {req_response.get('totalCount')}")
             logging.info(f"res_obj_name : {req_response.get(res_obj_name)}")
             logging.info(f"Has more : {req_response.get(has_more_attr)}")
-
-            if req_response.get(has_more_attr) or req_response.get(res_obj_name):
+            number_of_fetched_records = int(req_response.get('limit')) + int(req_response.get('offset'))
+            if req_response.get(has_more_attr) or number_of_fetched_records < int(req_response.get('total')):
                 has_more = True
-                offset = req_response[offset_resp_attr]
+                offset += limit
             else:
                 has_more = False
             if req_response.get(res_obj_name):
