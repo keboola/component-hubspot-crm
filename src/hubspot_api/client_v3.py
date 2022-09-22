@@ -4,8 +4,8 @@ from enum import Enum
 from typing import List, Union, Iterator
 from keboola.http_client import HttpClient
 
-MAX_RETRIES = 10
-MAX_TIMEOUT = 120
+MAX_RETRIES = 5
+MAX_TIMEOUT = 10
 BASE_URL = 'https://api.hubapi.com/'
 
 

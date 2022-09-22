@@ -120,8 +120,8 @@ DEALS_RECENT = 'deals/v1/deal/recent/modified'
 COMPANIES_ALL = 'companies/v2/companies/paged'
 COMPANIES_RECENT = 'companies/v2/companies/recent/modified'
 
-MAX_RETRIES = 10
-MAX_TIMEOUT = 120
+MAX_RETRIES = 5
+MAX_TIMEOUT = 10
 BASE_URL = 'https://api.hubapi.com/'
 
 # endpoints
