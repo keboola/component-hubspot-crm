@@ -9,6 +9,7 @@ import pandas as pd
 from keboola.http_client import HttpClient
 from pandas import json_normalize
 from requests import Response
+from requests.exceptions import ConnectionError
 
 from hubspot_api import client_v3
 
@@ -120,6 +121,7 @@ COMPANIES_ALL = 'companies/v2/companies/paged'
 COMPANIES_RECENT = 'companies/v2/companies/recent/modified'
 
 MAX_RETRIES = 10
+MAX_TIMEOUT = 120
 BASE_URL = 'https://api.hubapi.com/'
 
 # endpoints
@@ -127,6 +129,10 @@ CONTACTS_ALL = 'contacts/v1/lists/all/contacts/all'
 CONTACTS_RECENT = 'contacts/v1/lists/recently_updated/contacts/recent'
 
 COMPANY_PROPERTIES = 'properties/v1/companies/properties/'
+
+
+class HubspotClientException(Exception):
+    pass
 
 
 class HubspotClientService(HttpClient):
@@ -173,7 +179,10 @@ class HubspotClientService(HttpClient):
             parameters[offset_req_attr] = offset
             parameters[limit_attr] = limit
 
-            req = self.get_raw(self.base_url + endpoint, params=parameters)
+            try:
+                req = self.get_raw(self.base_url + endpoint, params=parameters, timeout=MAX_TIMEOUT)
+            except ConnectionError as exc:
+                raise HubspotClientException(f"Connection to Hubspot failed due :{exc}") from exc
             self._check_http_result(req, endpoint)
             req_response = self._parse_response_text(req, endpoint, parameters)
             if req_response.get(has_more_attr):
@@ -204,7 +213,10 @@ class HubspotClientService(HttpClient):
             parameters[offset_req_attr] = offset
             parameters[limit_attr] = limit
 
-            req = self.get_raw(self.base_url + endpoint, params=parameters)
+            try:
+                req = self.get_raw(self.base_url + endpoint, params=parameters, timeout=MAX_TIMEOUT)
+            except ConnectionError as exc:
+                raise HubspotClientException(f"Connection to Hubspot failed due :{exc}") from exc
             self._check_http_result(req, endpoint)
             req_response = self._parse_response_text(req, endpoint, parameters)
 
@@ -242,7 +254,10 @@ class HubspotClientService(HttpClient):
             parameters['timeOffset'] = timeoffset
             parameters['count'] = limit
 
-            req = self.get_raw(self.base_url + endpoint, params=parameters)
+            try:
+                req = self.get_raw(self.base_url + endpoint, params=parameters, timeout=MAX_TIMEOUT)
+            except ConnectionError as exc:
+                raise HubspotClientException(f"Connection to Hubspot failed due :{exc}") from exc
             self._check_http_result(req, endpoint)
             req_response = self._parse_response_text(req, endpoint, parameters)
             timeoffset = req_response.get('time-offset', since_time_offset)
@@ -360,7 +375,10 @@ class HubspotClientService(HttpClient):
                                                 'has-more', offset, 250, default_cols=expected_company_cols)
 
     def get_company_properties(self):
-        req = self.get_raw(self.base_url + COMPANY_PROPERTIES)
+        try:
+            req = self.get_raw(self.base_url + COMPANY_PROPERTIES, timeout=MAX_TIMEOUT)
+        except ConnectionError as exc:
+            raise HubspotClientException(f"Connection to Hubspot failed due :{exc}") from exc
         self._check_http_result(req, COMPANY_PROPERTIES)
         req_response = req.json()
         return req_response
@@ -436,7 +454,10 @@ class HubspotClientService(HttpClient):
                                                 1000):
 
             for index, row in res.iterrows():
-                req = self.get_raw(self.base_url + CAMPAIGNS + str(row['id']))
+                try:
+                    req = self.get_raw(self.base_url + CAMPAIGNS + str(row['id']), timeout=MAX_TIMEOUT)
+                except ConnectionError as exc:
+                    raise HubspotClientException(f"Connection to Hubspot failed due :{exc}") from exc
                 self._check_http_result(req, CAMPAIGNS)
                 req_response = req.json()
 
@@ -496,7 +517,12 @@ class HubspotClientService(HttpClient):
     def get_pipelines(self, include_inactive=None):
         final_df = pd.DataFrame()
 
-        req = self.get_raw('https://api.hubapi.com/deals/v1/pipelines', params={'include_inactive': include_inactive})
+        try:
+            req = self.get_raw('https://api.hubapi.com/deals/v1/pipelines',
+                               params={'include_inactive': include_inactive},
+                               timeout=MAX_TIMEOUT)
+        except ConnectionError as exc:
+            raise HubspotClientException(f"Connection to Hubspot failed due :{exc}") from exc
         self._check_http_result(req, 'deals/pipelines')
         req_response = req.json()
 
@@ -507,7 +533,12 @@ class HubspotClientService(HttpClient):
     def get_owners(self, include_inactive=True):
         final_df = pd.DataFrame()
 
-        req = self.get_raw('https://api.hubapi.com/owners/v2/owners/', params={'include_inactive': include_inactive})
+        try:
+            req = self.get_raw('https://api.hubapi.com/owners/v2/owners/',
+                               params={'include_inactive': include_inactive},
+                               timeout=MAX_TIMEOUT)
+        except ConnectionError as exc:
+            raise HubspotClientException(f"Connection to Hubspot failed due :{exc}") from exc
         self._check_http_result(req, 'owners')
         req_response = req.json()
 
@@ -526,10 +557,16 @@ class HubspotClientService(HttpClient):
         return resp
 
     def get_v3_engagement_object(self, object_type: str, properties: List[str] = None):
-        return self._client_v3.get_engagement_object(object_type, properties)
+        try:
+            return self._client_v3.get_engagement_object(object_type, properties)
+        except ConnectionError as exc:
+            raise HubspotClientException(f"Connection to Hubspot failed due :{exc}") from exc
 
     def get_forms(self):
-        return self._client_v3.get_forms()
+        try:
+            return self._client_v3.get_forms()
+        except ConnectionError as exc:
+            raise HubspotClientException(f"Connection to Hubspot failed due :{exc}") from exc
 
     def get_associations(self, from_object_type: str, to_object_type: str, ids: List[str]):
         """
@@ -542,4 +579,7 @@ class HubspotClientService(HttpClient):
                Returns: Result as dict
 
                """
-        return self._client_v3.get_associations(from_object_type, to_object_type, ids)
+        try:
+            return self._client_v3.get_associations(from_object_type, to_object_type, ids)
+        except ConnectionError as exc:
+            raise HubspotClientException(f"Connection to Hubspot failed due :{exc}") from exc

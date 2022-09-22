@@ -2,10 +2,11 @@ import json
 import logging
 from enum import Enum
 from typing import List, Union, Iterator
-
+from requests.exceptions import ConnectionError
 from keboola.http_client import HttpClient
 
 MAX_RETRIES = 10
+MAX_TIMEOUT = 120
 BASE_URL = 'https://api.hubapi.com/'
 
 
@@ -62,8 +63,8 @@ class ClientV3(HttpClient):
         has_more = True
         while has_more:
             parameters['limit'] = limit
+            req = self.get_raw(self.base_url + endpoint, params=parameters, timeout=MAX_TIMEOUT)
 
-            req = self.get_raw(self.base_url + endpoint, params=parameters)
             self._check_http_result(req, endpoint)
             resp_text = str.encode(req.text, 'utf-8')
             req_response = json.loads(resp_text)

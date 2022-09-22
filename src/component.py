@@ -15,7 +15,7 @@ import pandas as pd
 from keboola.component import ComponentBase
 from keboola.csvwriter import ElasticDictWriter
 
-from hubspot_api.client_service import HubspotClientService, CONTACTS_DEFAULT_COLS
+from hubspot_api.client_service import HubspotClientService, CONTACTS_DEFAULT_COLS, HubspotClientException
 from json_parser import FlattenJsonParser
 
 ENGAGEMENT_ASSOC_COLS = ["contactIds",
@@ -80,6 +80,10 @@ ENGAGEMENT_COLS = [
 ]
 
 APP_VERSION = '1.0.1'
+
+
+class UserException(Exception):
+    pass
 
 
 class Component(ComponentBase):
@@ -564,15 +568,18 @@ class Component(ComponentBase):
         counter = 0
         next_boundary = 500
         total_rows = 0
-        for res in method(**kwargs):
-            if counter % 500 == 0:
-                logging.info(f"Downloading records between {counter} and {next_boundary}.")
-                next_boundary = counter + 500
-                counter += 1
-            for row in res:
-                total_rows = + 1
-                parsed_row = parser.parse_row(row)
-                self.output_object_dict(parsed_row, result_path, header_columns)
+        try:
+            for res in method(**kwargs):
+                if counter % 500 == 0:
+                    logging.info(f"Downloading records between {counter} and {next_boundary}.")
+                    next_boundary = counter + 500
+                    counter += 1
+                for row in res:
+                    total_rows = + 1
+                    parsed_row = parser.parse_row(row)
+                    self.output_object_dict(parsed_row, result_path, header_columns)
+        except HubspotClientException as exc:
+            raise UserException(exc) from exc
 
         if total_rows > 0:
             self.write_manifest(result_table)
@@ -688,6 +695,9 @@ if __name__ == "__main__":
     try:
         comp = Component(debug_arg)
         comp.run()
+    except UserException as e:
+        logging.exception(e)
+        exit(1)
     except KeyError as e:
         logging.exception(Exception(F'Invalid Key value:{e}'))
         exit(2)
