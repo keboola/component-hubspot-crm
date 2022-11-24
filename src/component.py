@@ -485,7 +485,7 @@ class Component(ComponentBase):
                                               incremental=self.incremental)
         if os.path.isfile(c_lists_path):
             self._write_table_manifest_legacy(file_name=c_lists_path, primary_key=DEAL_C_LIST_PK,
-                                              columns=c_list_cols,
+                                              columns=["contact_vid", "dealId"],
                                               incremental=self.incremental)
         if os.path.isfile(deal_lists_path):
             self._write_table_manifest_legacy(file_name=deal_lists_path,
