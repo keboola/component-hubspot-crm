@@ -195,8 +195,7 @@ class HubspotClientService(HttpClient):
             yield final_df
 
     def _get_paged_result_pages_dict(self, endpoint, parameters, res_obj_name, limit_attr, offset_req_attr,
-                                     offset_resp_attr,
-                                     has_more_attr, offset, limit, default_cols=None):
+                                     offset_resp_attr, offset, limit, default_cols=None):
 
         has_more = True
         while has_more:
@@ -208,9 +207,15 @@ class HubspotClientService(HttpClient):
             self._check_http_result(req, endpoint)
             req_response = self._parse_response_text(req, endpoint, parameters)
 
-            if req_response.get(has_more_attr) or req_response.get(res_obj_name):
+            # paginate until there are some data
+            if req_response.get(res_obj_name):
+                logging.debug(
+                    f'totalCount:{req_response["totalCount"]}, offset:{req_response["offset"]}, '
+                    f'datalen: {len(req_response["objects"])}, total:{req_response["total"]}')
                 has_more = True
-                offset = req_response[offset_resp_attr]
+                # https://legacydocs.hubspot.com/docs/methods/cms_email/get-all-marketing-email-statistics
+                # Use the limit of the previous request as the offset to get the next set of results.
+                offset = req_response[offset_resp_attr] + limit
             else:
                 has_more = False
             if req_response.get(res_obj_name):
@@ -521,7 +526,7 @@ class HubspotClientService(HttpClient):
             parameters = {"updated__gte": updated_since}
         resp = self._get_paged_result_pages_dict('marketing-emails/v1/emails/with-statistics', parameters, 'objects',
                                                  'limit',
-                                                 'offset', 'offset', 'hasmore', 0, 300)
+                                                 'offset', 'offset', 0, 250)
 
         return resp
 
