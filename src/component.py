@@ -454,7 +454,8 @@ class Component(ComponentBase):
 
                 logging.info(
                     f'list of available columns for dealstage: {temp_stage_history.columns} '
-                    f'and from variable:{DEAL_STAGE_HIST_COLS}')
+                    f'and from variable:{DEAL_STAGE_HIST_COLS}'
+                    f'and list from values:{list(temp_stage_history.columns.values)}')
                 self.output_file(temp_stage_history, stage_hist_path, temp_stage_history.columns)
                 if not stage_his_cols:
                     stage_his_cols = list(temp_stage_history.columns.values)
