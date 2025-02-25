@@ -453,7 +453,8 @@ class Component(ComponentBase):
                 temp_stage_history = temp_stage_history.reindex(columns=DEAL_STAGE_HIST_COLS).fillna('')
 
                 logging.info(
-                    f'list of available columns: {temp_stage_history.columns} and from variable:{DEAL_STAGE_HIST_COLS}')
+                    f'list of available columns for dealstage: {temp_stage_history.columns} '
+                    f'and from variable:{DEAL_STAGE_HIST_COLS}')
                 self.output_file(temp_stage_history, stage_hist_path, temp_stage_history.columns)
                 if not stage_his_cols:
                     stage_his_cols = list(temp_stage_history.columns.values)
