@@ -479,6 +479,7 @@ class Component(ComponentBase):
                 if not ass_deal_list_cols:
                     ass_deal_list_cols = list(ass_deal_list.columns.values)
 
+        logging.info('test')
         if os.path.isfile(stage_hist_path):
             self._write_table_manifest_legacy(file_name=stage_hist_path, primary_key=DEAL_STAGE_HIST_PK,
                                               columns=stage_his_cols,
