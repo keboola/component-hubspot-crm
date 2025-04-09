@@ -1,3 +1,5 @@
+# This component is deprecated. Please use the new kds-team.ex-hubspot-v2 component instead.
+
 # Hubspot extractor
 
 KBC Component for data retrieval from [Hubspot API](https://developers.hubspot.com/docs/overview).
